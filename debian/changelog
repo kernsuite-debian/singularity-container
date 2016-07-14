@@ -1,7 +1,14 @@
+singularity (2.1~testing0-1) UNRELEASED; urgency=medium
+
+  * Fresh pre-release
+  * TODO: Upload to Debian proper (Closes: #828970)
+
+ -- Yaroslav Halchenko <debian@onerussian.com>  Thu, 14 Jul 2016 11:03:15 -0400
+
 singularity (2.0-1) UNRELEASED; urgency=medium
 
   * New upstream release
-  * Initial Debian packaging (Closes: #828970)
+  * Initial Debian packaging
 
  -- Dave Love <fx@gnu.org>  Thu, 02 Jun 2016 22:48:28 +0100
 

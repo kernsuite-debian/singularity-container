@@ -14,6 +14,7 @@ override_dh_auto_install:
 	: # Very sloppy man pages for now
 	mkdir -p $(PKGDIR)/usr/share/man/man1
 	for b in singularity run-singularity; do \
+		PATH=$(PKGDIR)/usr/bin:$$PATH \
 		help2man --no-info $(PKGDIR)/usr/bin/$$b >| $(PKGDIR)/usr/share/man/man1/$$b.1; \
 	done
 

@@ -1,8 +1,14 @@
 Source: singularity
 Section: admin
 Priority: optional
-Maintainer: Dave Love <fx@gnu.org>
-Build-Depends: debhelper (>= 9), dh-autoreconf
+Maintainer: NeuroDebian Team <team@neuro.debian.net>
+Uploaders:
+ Dave Love <fx@gnu.org>,
+ Yaroslav Halchenko <debian@onerussian.com>,
+Build-Depends:
+ debhelper (>= 9),
+ dh-autoreconf,
+ help2man,
 Standards-Version: 3.9.8
 Homepage: http://gmkurtzer.github.io/singularity
 Vcs-Git: https://github.com/gmkurtzer/singularity.git

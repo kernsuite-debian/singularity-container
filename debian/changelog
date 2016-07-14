@@ -2,6 +2,10 @@ singularity (2.1~testing0-1) UNRELEASED; urgency=medium
 
   * Fresh pre-release
   * TODO: Upload to Debian proper (Closes: #828970)
+  * debian/control
+    - Place under NeuroDebian team maintenance
+  * debian/rules
+    - Generate quick and dirty manpages using help2man
 
  -- Yaroslav Halchenko <debian@onerussian.com>  Thu, 14 Jul 2016 11:03:15 -0400
 

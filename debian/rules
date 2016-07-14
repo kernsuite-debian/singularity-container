@@ -3,14 +3,25 @@
 #DH_VERBOSE=1
 export DEB_BUILD_MAINT_OPTIONS = hardening=+all
 
+PKGDIR=debian/singularity-container
+
 %:
 	dh $@  --with autoreconf
+
+override_dh_auto_install:
+	dh_auto_install
+
+	: # Very sloppy man pages for now
+	mkdir -p $(PKGDIR)/usr/share/man/man1
+	for b in singularity run-singularity; do \
+		help2man --no-info $(PKGDIR)/usr/bin/$$b >| $(PKGDIR)/usr/share/man/man1/$$b.1; \
+	done
 
 override_dh_installdocs:
 	dh_installdocs README.md AUTHORS
 
 override_dh_fixperms:
 	dh_fixperms
-	chown root.root debian/singularity-container/usr/lib/*/singularity/sexec
-	chmod 4755 debian/singularity-container/usr/lib/*/singularity/sexec
-	chmod 644 debian/singularity-container/usr/lib/*/singularity/cli/*.help
+	chown root.root $(PKGDIR)/usr/lib/*/singularity/sexec
+	chmod 4755 $(PKGDIR)/usr/lib/*/singularity/sexec
+	chmod 644 $(PKGDIR)/usr/lib/*/singularity/cli/*.help

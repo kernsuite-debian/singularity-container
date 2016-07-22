@@ -5,18 +5,27 @@ export DEB_BUILD_MAINT_OPTIONS = hardening=+all
 
 PKGDIR=debian/singularity-container
 
+# For associative arrays with descriptions for manpages
+export SHELL=/bin/bash
+
 %:
 	dh $@  --with autoreconf
 
 override_dh_auto_install:
 	dh_auto_install
 
+override_dh_installman:
 	: # Very sloppy man pages for now
 	mkdir -p $(PKGDIR)/usr/share/man/man1
+	declare -A desc; \
+	desc[singularity]="Singularity containers command line interface"; \
+	desc[run-singularity]="launch a Singularity containers with a runscript"; \
 	for b in singularity run-singularity; do \
 		PATH=$(PKGDIR)/usr/bin:$$PATH \
-		help2man --no-info $(PKGDIR)/usr/bin/$$b >| $(PKGDIR)/usr/share/man/man1/$$b.1; \
+		help2man -n "$${desc[$$b]}" --no-info $(PKGDIR)/usr/bin/$$b \
+			>| $(PKGDIR)/usr/share/man/man1/$$b.1; \
 	done
+	dh_installman
 
 override_dh_installdocs:
 	dh_installdocs README.md AUTHORS

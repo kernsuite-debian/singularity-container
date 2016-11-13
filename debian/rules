@@ -22,5 +22,5 @@ override_dh_installdocs:
 override_dh_fixperms:
 	dh_fixperms
 	chown root.root $(PKGDIR)/usr/lib/*/singularity/sexec
-	chmod 4755 $(PKGDIR)/usr/lib/*/singularity/sexec
+	chmod 4755 $(PKGDIR)/usr/lib/*/singularity/sexec-suid
 	chmod 644 $(PKGDIR)/usr/lib/*/singularity/cli/*.help

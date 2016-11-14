@@ -1,0 +1,3 @@
+usr/lib/*/libsingularity.a
+usr/lib/*/libsingularity.la
+usr/include/singularity.h

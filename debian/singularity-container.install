@@ -1,0 +1,5 @@
+etc/bash_completion.d
+etc/singularity
+usr/bin
+usr/share
+usr/lib/*/singularity

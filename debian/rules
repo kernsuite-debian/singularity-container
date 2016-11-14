@@ -19,6 +19,8 @@ override_dh_installman:
 override_dh_installdocs:
 	dh_installdocs README.md AUTHORS
 
+override_dh_auto_test:
+
 override_dh_fixperms:
 	dh_fixperms
 	chown root.root $(PKGDIR)/usr/lib/*/singularity/sexec

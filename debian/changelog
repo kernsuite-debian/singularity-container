@@ -3,6 +3,8 @@ singularity-container (2.2-1) UNRELEASED; urgency=medium
   * Team upload.
   * New upstream release.
     - Install sexec-suid utility instead of sexec
+  * Add a override_dh_auto_test in debian/rules to skip testsuite which
+    is not well-suited for auto-builders.
 
  -- Mehdi Dogguy <mehdi@debian.org>  Mon, 14 Nov 2016 00:31:41 +0100
 

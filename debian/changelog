@@ -6,7 +6,6 @@ singularity-container (2.2-1) unstable; urgency=medium
     - Install sexec-suid utility instead of sexec
   * Add a override_dh_auto_test in debian/rules to skip testsuite which
     is not well-suited for auto-builders.
-  * Ship singularity's library in its own packages
 
   [ Yaroslav Halchenko ]
   * Generated initial debian/libsingularity1.symbols file

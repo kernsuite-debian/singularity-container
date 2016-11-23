@@ -1,5 +1,6 @@
 singularity-container (2.2-1) UNRELEASED; urgency=medium
 
+  [ Mehdi Dogguy ]
   * Team upload.
   * New upstream release.
     - Install sexec-suid utility instead of sexec
@@ -7,7 +8,10 @@ singularity-container (2.2-1) UNRELEASED; urgency=medium
     is not well-suited for auto-builders.
   * Ship singularity's library in its own packages
 
- -- Mehdi Dogguy <mehdi@debian.org>  Mon, 14 Nov 2016 00:31:41 +0100
+  [ Yaroslav Halchenko ]
+  * Generated initial debian/libsingularity1.symbols file
+
+ --
 
 singularity-container (2.1.2-1) unstable; urgency=medium
 

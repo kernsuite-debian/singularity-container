@@ -4,6 +4,7 @@ Priority: optional
 Maintainer: NeuroDebian Team <team@neuro.debian.net>
 Uploaders:
  Dave Love <fx@gnu.org>,
+ Mehdi Dogguy <mehdi@debian.org>,
  Yaroslav Halchenko <debian@onerussian.com>,
 Build-Depends:
  debhelper (>= 9),
@@ -11,8 +12,8 @@ Build-Depends:
  help2man,
 Standards-Version: 3.9.8
 Homepage: http://gmkurtzer.github.io/singularity
-Vcs-Git: https://github.com/gmkurtzer/singularity.git
-Vcs-Browser: https://github.com/gmkurtzer/singularity
+Vcs-Git: https://anonscm.debian.org/git/collab-maint/singularity-container.git
+Vcs-Browser: https://anonscm.debian.org/git/collab-maint/singularity-container.git
 
 # "singularity" is a packaged game (but the contents don't clash)
 Package: singularity-container

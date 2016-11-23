@@ -1,4 +1,4 @@
-singularity-container (2.2-1) UNRELEASED; urgency=medium
+singularity-container (2.2-1) unstable; urgency=medium
 
   [ Mehdi Dogguy ]
   * Team upload.
@@ -10,8 +10,11 @@ singularity-container (2.2-1) UNRELEASED; urgency=medium
 
   [ Yaroslav Halchenko ]
   * Generated initial debian/libsingularity1.symbols file
+  * debian/control
+    - Vcs- fields adjusted to point to https://anonscm.debian.org/git
+    - Mehdi to uploaders
 
- --
+ -- Yaroslav Halchenko <debian@onerussian.com>  Wed, 23 Nov 2016 09:01:42 -0500
 
 singularity-container (2.1.2-1) unstable; urgency=medium
 

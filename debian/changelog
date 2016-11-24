@@ -12,7 +12,7 @@ singularity-container (2.2-1) unstable; urgency=medium
     - Vcs- fields adjusted to point to https://anonscm.debian.org/git
     - Mehdi to uploaders
   * Enforce world readable permissions for /var/singularity{,/mnt{,/source}}
-    directories, needed since 2.2
+    directories (needed since 2.2)
 
  -- Yaroslav Halchenko <debian@onerussian.com>  Thu, 24 Nov 2016 14:02:35 -0500
 

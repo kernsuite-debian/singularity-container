@@ -1,0 +1,3 @@
+var/singularity
+var/singularity/mnt
+var/singularity/mnt/source

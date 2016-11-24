@@ -26,3 +26,7 @@ override_dh_fixperms:
 	chown root.root $(PKGDIR)/usr/lib/*/singularity/sexec
 	chmod 4755 $(PKGDIR)/usr/lib/*/singularity/sexec-suid
 	chmod 644 $(PKGDIR)/usr/lib/*/singularity/cli/*.help
+	: # Force global access permissions needed since 2.2
+	chmod 0755 $(PKGDIR)/var/singularity
+	chmod 0755 $(PKGDIR)/var/singularity/mnt
+	chmod 0755 $(PKGDIR)/var/singularity/mnt/source

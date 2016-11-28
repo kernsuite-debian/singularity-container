@@ -13,6 +13,10 @@ singularity-container (2.2-1) UNRELEASED; urgency=medium
     - Mehdi to uploaders
   * Enforce world readable permissions for /var/singularity{,/mnt{,/source}}
     directories (needed since 2.2)
+  * debian/patches
+    - 000*-*py* - to not install not to be executed python modules as scripts
+  * debian/control
+    - ${python:Depends} since some python scripts are available
 
  -- Yaroslav Halchenko <debian@onerussian.com>  Thu, 24 Nov 2016 14:02:35 -0500
 

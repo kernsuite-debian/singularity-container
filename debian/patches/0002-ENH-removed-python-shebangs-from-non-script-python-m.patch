@@ -1,0 +1,29 @@
+From f4c0410b2cf43795b834fa4e9e634e274e934062 Mon Sep 17 00:00:00 2001
+From: Yaroslav Halchenko <debian@onerussian.com>
+Date: Mon, 28 Nov 2016 10:43:20 -0500
+Subject: [PATCH 2/2] ENH: removed python shebangs from non-script python
+ modules
+
+---
+ libexec/python/defaults.py         | 2 --
+ libexec/python/docker/api.py       | 2 --
+ libexec/python/docker/converter.py | 2 --
+ libexec/python/utils.py            | 2 --
+ 4 files changed, 8 deletions(-)
+
+--- a/libexec/python/docker/api.py
++++ b/libexec/python/docker/api.py
+@@ -1,5 +1,3 @@
+-#!/usr/bin/env python
+-
+ '''
+ 
+ docker.py: Docker helper functions for Singularity in Python
+--- a/libexec/python/utils.py
++++ b/libexec/python/utils.py
+@@ -1,5 +1,3 @@
+-#!/usr/bin/env python
+-
+ '''
+ utils.py: python helper for singularity command line tool
+ 

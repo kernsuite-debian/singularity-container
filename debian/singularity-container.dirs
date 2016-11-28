@@ -1,3 +1,4 @@
 var/singularity
 var/singularity/mnt
 var/singularity/mnt/source
+usr/share/bash-completion

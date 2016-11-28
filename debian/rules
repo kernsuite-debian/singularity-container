@@ -10,6 +10,8 @@ PKGDIR=debian/singularity-container
 
 override_dh_auto_install:
 	dh_auto_install
+	: # move bash completions into now new standard location
+	mv $(PKGDIR)/etc/bash_completion.d $(PKGDIR)/usr/share/bash-completion/completions
 
 override_dh_installman:
 	: # Very sloppy man pages for now

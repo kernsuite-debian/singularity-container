@@ -11,15 +11,16 @@ singularity-container (2.2-1) UNRELEASED; urgency=medium
   * debian/control
     - Vcs- fields adjusted to point to https://anonscm.debian.org/git
     - Mehdi to uploaders
+    - Depends on python since some python scripts are used
   * Enforce world readable permissions for /var/singularity{,/mnt{,/source}}
     directories (needed since 2.2)
   * debian/patches
     - 000*-*py* - to not install not to be executed python modules as scripts
     - 000*-bash* - bash completions script has bashisms
-  * debian/control
-    - Depends on python since some python scripts are used
+  * debian/rules
+    - bash completion script under /usr/share/bash-completion/completions
 
- -- Yaroslav Halchenko <debian@onerussian.com>  Thu, 24 Nov 2016 14:02:35 -0500
+ -- Yaroslav Halchenko <debian@onerussian.com>  Mon, 28 Nov 2016 12:29:09 -0500
 
 singularity-container (2.1.2-1) unstable; urgency=medium
 

@@ -15,6 +15,7 @@ singularity-container (2.2-1) UNRELEASED; urgency=medium
     directories (needed since 2.2)
   * debian/patches
     - 000*-*py* - to not install not to be executed python modules as scripts
+    - 000*-bash* - bash completions script has bashisms
   * debian/control
     - Depends on python since some python scripts are used
 

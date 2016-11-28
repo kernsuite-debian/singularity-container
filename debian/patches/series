@@ -1,2 +1,3 @@
 0001-BF-do-not-make-python-modules-not-intended-to-be-exe.patch
 0002-ENH-removed-python-shebangs-from-non-script-python-m.patch
+0001-BF-bash_completion.d-script-has-bashisms-so-use-bash.patch

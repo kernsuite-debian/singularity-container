@@ -16,7 +16,7 @@ singularity-container (2.2-1) UNRELEASED; urgency=medium
   * debian/patches
     - 000*-*py* - to not install not to be executed python modules as scripts
   * debian/control
-    - ${python:Depends} since some python scripts are available
+    - Depends on python since some python scripts are used
 
  -- Yaroslav Halchenko <debian@onerussian.com>  Thu, 24 Nov 2016 14:02:35 -0500
 

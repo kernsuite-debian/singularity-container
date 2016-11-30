@@ -19,8 +19,12 @@ singularity-container (2.2-1) UNRELEASED; urgency=medium
     - 000*-bash* - bash completions script has bashisms
   * debian/rules
     - bash completion script under /usr/share/bash-completion/completions
+  * use /var/lib/singularity (instead of FHS-noncompliant /var/singularity)
+    Next upstream release will adhere to this location as well.
+    Previously used location /var/singularity is left untouched -- inspect
+    and cleanup.
 
- -- Yaroslav Halchenko <debian@onerussian.com>  Mon, 28 Nov 2016 12:29:09 -0500
+ -- Yaroslav Halchenko <debian@onerussian.com>  Wed, 30 Nov 2016 12:33:01 -0500
 
 singularity-container (2.1.2-1) unstable; urgency=medium
 

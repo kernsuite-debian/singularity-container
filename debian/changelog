@@ -1,3 +1,13 @@
+singularity-container (2.2-2) unstable; urgency=high
+
+  * debian/patches
+    - changeset_b859cd8b4b9293f2a8a893ef41c5d93a5318dd6c.diff
+      to support mounting ext4 formatted images read-only
+    - changeset_f79e853d9ee8a15b1d16cdc7dfbe85eca50efc6d.diff
+      to utilize mount option MS_NODEV for images 
+
+ -- Yaroslav Halchenko <debian@onerussian.com>  Thu, 09 Feb 2017 10:16:18 -0500
+
 singularity-container (2.2-1) unstable; urgency=medium
 
   [ Mehdi Dogguy ]

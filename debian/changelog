@@ -1,6 +1,7 @@
 singularity-container (2.2-2) unstable; urgency=high
 
-  * debian/patches
+  * debian/patches - picks up from upcoming 2.2.1 release
+    critical functionality and possibly security-related fixes
     - changeset_b859cd8b4b9293f2a8a893ef41c5d93a5318dd6c.diff
       to support mounting ext4 formatted images read-only
     - changeset_f79e853d9ee8a15b1d16cdc7dfbe85eca50efc6d.diff
@@ -9,8 +10,14 @@ singularity-container (2.2-2) unstable; urgency=high
     - changeset_d835fa1d20efc4aaacca4be68431d193d6625bd8.diff
       to fix bootstrapping ran as root (thus no MS_NODEV restriction
       from above patch should be applied)
+    - changeset_3a2b6537f0b1386336e29d7f763ae62374a7cb77.diff
+      exit with error if snprintf would have went out of bounds
+    - changeset_acc02b921192e7e16afe1513d5338904f8e6f907.diff
+      changeset_0935d68145ce575444b7ced43417cc6fccffd670.diff
+      changeset_0d04edaeb5cb3607ab25588f4db177c0878adcc0.diff
+      Various obvious fixes (updated URLs, apt --force-yes)
 
- -- Yaroslav Halchenko <debian@onerussian.com>  Thu, 09 Feb 2017 16:17:22 -0500
+ -- Yaroslav Halchenko <debian@onerussian.com>  Thu, 09 Feb 2017 16:27:55 -0500
 
 singularity-container (2.2-1) unstable; urgency=medium
 

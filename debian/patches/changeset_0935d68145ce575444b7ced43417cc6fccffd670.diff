@@ -1,0 +1,21 @@
+From: Gregory M. Kurtzer <gmkurtzer@lbl.gov>
+Subject: Use --force-yes
+
+--- a/examples/debian.def
++++ b/examples/debian.def
+@@ -16,5 +16,5 @@ MirrorURL: http://ftp.us.debian.org/debi
+ %post
+     echo "Hello from inside the container"
+     apt-get update
+-    apt-get -y install vim
++    apt-get -y --force-yes install vim
+ 
+--- a/examples/ubuntu.def
++++ b/examples/ubuntu.def
+@@ -16,5 +16,5 @@ MirrorURL: http://us.archive.ubuntu.com/
+ %post
+     echo "Hello from inside the container"
+     sed -i 's/$/ universe/' /etc/apt/sources.list
+-    apt-get -y install vim
++    apt-get -y --force-yes install vim
+ 

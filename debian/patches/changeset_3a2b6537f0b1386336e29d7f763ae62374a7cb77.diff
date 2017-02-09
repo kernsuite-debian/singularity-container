@@ -1,0 +1,120 @@
+From: Brian Bockelman <bbockelm@cse.unl.edu>
+Subject: Fix remaining usage of snprintf.
+
+--- a/src/lib/message.c
++++ b/src/lib/message.c
+@@ -109,23 +109,23 @@ void _singularity_message(int level, con
+     }
+ 
+     if ( level <= messagelevel ) {
+-        char *header_string;
++        char header_string[95];
+ 
+         if ( messagelevel >= DEBUG ) {
+-            char *debug_string = (char *) malloc(25);
+-            char *location_string = (char *) malloc(60);
+-            char *tmp_header_string = (char *) malloc(80);
+-            header_string = (char *) malloc(80);
++            char debug_string[25];
++            char location_string[60];
++            char tmp_header_string[86];
+             snprintf(location_string, 60, "%s:%d:%s()", file, line, function); // Flawfinder: ignore
++            location_string[59] = '\0';
+             snprintf(debug_string, 25, "[U=%d,P=%d]", geteuid(), getpid()); // Flawfinder: ignore
+-            snprintf(tmp_header_string, 80, "%-18s %s", debug_string, location_string); // Flawfinder: ignore
+-            snprintf(header_string, 80, "%-7s %-62s: ", prefix, tmp_header_string); // Flawfinder: ignore
+-            free(debug_string);
+-            free(location_string);
+-            free(tmp_header_string);
++            debug_string[24] = '\0';
++            snprintf(tmp_header_string, 86, "%-18s %s", debug_string, location_string); // Flawfinder: ignore
++            tmp_header_string[85] = '\0';
++            snprintf(header_string, 95, "%-7s %-62s: ", prefix, tmp_header_string); // Flawfinder: ignore
++            header_string[94] = '\0';
+         } else {
+-            header_string = (char *) malloc(11);
+             snprintf(header_string, 10, "%-7s: ", prefix); // Flawfinder: ignore
++            header_string[9] = '\0';
+         }
+ 
+         if ( level == INFO && messagelevel == INFO ) {
+@@ -138,7 +138,6 @@ void _singularity_message(int level, con
+             fprintf(stderr, "%s", strjoin(header_string, message));
+         }
+ 
+-
+         fflush(stdout);
+         fflush(stderr);
+ 
+--- a/src/lib/rootfs/rootfs.c
++++ b/src/lib/rootfs/rootfs.c
+@@ -184,7 +184,10 @@ int singularity_rootfs_mount(void) {
+     } else if ( envar_defined("SINGULARITY_WRITABLE") == TRUE ) {
+         singularity_message(VERBOSE3, "Not enabling overlayFS, image mounted writablable\n");
+     } else {
+-        snprintf(overlay_options, overlay_options_len, "lowerdir=%s,upperdir=%s,workdir=%s", rootfs_source, overlay_upper, overlay_work); // Flawfinder: ignore
++        if (snprintf(overlay_options, overlay_options_len, "lowerdir=%s,upperdir=%s,workdir=%s", rootfs_source, overlay_upper, overlay_work) >= overlay_options_len) {
++            singularity_message(ERROR, "Overly-long path names for OverlayFS configuration.\n");
++            ABORT(255);
++        }
+ 
+         singularity_priv_escalate();
+         singularity_message(DEBUG, "Mounting overlay tmpfs: %s\n", overlay_mount);
+--- a/src/lib/sessiondir.c
++++ b/src/lib/sessiondir.c
+@@ -55,7 +55,7 @@ char *singularity_sessiondir_init(char *
+         struct stat filestat;
+         uid_t uid = singularity_priv_getuid();
+ 
+-        sessiondir = (char *) malloc(sizeof(char) * PATH_MAX);
++        sessiondir = (char *) malloc(PATH_MAX);
+ 
+         singularity_message(DEBUG, "Checking Singularity configuration for 'sessiondir prefix'\n");
+ 
+@@ -66,9 +66,15 @@ char *singularity_sessiondir_init(char *
+ 
+         singularity_config_rewind();
+         if ( ( sessiondir_prefix = envar_path("SINGULARITY_SESSIONDIR") ) != NULL ) {
+-            snprintf(sessiondir, sizeof(char) * PATH_MAX, "%s/singularity-session-%d.%d.%lu", sessiondir_prefix, (int)uid, (int)filestat.st_dev, (long unsigned)filestat.st_ino); // Flawfinder: ignore
++            if (snprintf(sessiondir, PATH_MAX, "%s/singularity-session-%d.%d.%lu", sessiondir_prefix, (int)uid, (int)filestat.st_dev, (long unsigned)filestat.st_ino) >= PATH_MAX) { // Flawfinder: ignore
++                singularity_message(ERROR, "Overly-long session directory specified.\n");
++                ABORT(255);
++            }
+         } else if ( ( sessiondir_prefix = singularity_config_get_value("sessiondir prefix") ) != NULL ) {
+-            snprintf(sessiondir, sizeof(char) * PATH_MAX, "%s%d.%d.%lu", sessiondir_prefix, (int)uid, (int)filestat.st_dev, (long unsigned)filestat.st_ino); // Flawfinder: ignore
++            if (snprintf(sessiondir, PATH_MAX, "%s%d.%d.%lu", sessiondir_prefix, (int)uid, (int)filestat.st_dev, (long unsigned)filestat.st_ino) >= PATH_MAX) { // Flawfinder: ignore
++                singularity_message(ERROR, "Overly-long session directory specified.\n");
++                ABORT(255);
++            }
+         } else {
+             snprintf(sessiondir, sizeof(char) * PATH_MAX, "/tmp/.singularity-session-%d.%d.%lu", (int)uid, (int)filestat.st_dev, (long unsigned)filestat.st_ino); // Flawfinder: ignore
+         }
+--- a/src/util/util.c
++++ b/src/util/util.c
+@@ -136,8 +136,12 @@ char *joinpath(const char * path1, const
+         path2++;
+     }
+ 
+-    ret = (char *) malloc(strlength(tmp_path1, PATH_MAX) + strlength(path2, PATH_MAX) + 2);
+-    snprintf(ret, strlength(tmp_path1, PATH_MAX) + strlen(path2) + 2, "%s/%s", tmp_path1, path2); // Flawfinder: ignore
++    size_t ret_pathlen = strlength(tmp_path1, PATH_MAX) + strlength(path2, PATH_MAX) + 2;
++    ret = (char *) malloc(ret_pathlen);
++    if (snprintf(ret, ret_pathlen, "%s/%s", tmp_path1, path2) >= ret_pathlen) { // Flawfinder: ignore
++        singularity_message(ERROR, "Overly-long path name.\n");
++        ABORT(255);
++    }
+ 
+     return(ret);
+ }
+@@ -147,7 +151,10 @@ char *strjoin(char *str1, char *str2) {
+     int len = strlength(str1, 2048) + strlength(str2, 2048) + 1;
+ 
+     ret = (char *) malloc(len);
+-    snprintf(ret, len, "%s%s", str1, str2); // Flawfinder: ignore
++    if (snprintf(ret, len, "%s%s", str1, str2) >= len) { // Flawfinder: ignore
++       singularity_message(ERROR, "Overly-long string encountered.\n");
++       ABORT(255);
++    }
+ 
+     return(ret);
+ }

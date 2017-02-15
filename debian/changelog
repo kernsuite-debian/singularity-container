@@ -1,3 +1,10 @@
+singularity-container (2.2.1-1) experimental; urgency=medium
+
+  * Fresh upstream bugfix release (includes all included in 2.2-2 changesets,
+    which are dropped now here)
+
+ -- Yaroslav Halchenko <debian@onerussian.com>  Wed, 15 Feb 2017 10:42:39 -0500
+
 singularity-container (2.2-2) unstable; urgency=high
 
   * debian/patches - picks up from upcoming 2.2.1 release

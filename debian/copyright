@@ -2,6 +2,7 @@ Format: http://www.debian.org/doc/packaging-manuals/copyright-format/1.0/
 Upstream-Name: singularity
 Upstream-Contact: Gregory M. Kurtzer <gmkurtzer@lbl.gov>
 Source: https://github.com/gmkurtzer/singularity
+Files-Excluded: debian
 
 Files: *
 Copyright: 2015-2016, Gregory M. Kurtzer <gmkurtzer@lbl.gov>

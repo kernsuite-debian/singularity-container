@@ -90,7 +90,7 @@ int singularity_file_group(void) {
     errno = 0;
     if ( ! pwent ) {
         // List of potential error codes for unknown name taken from man page.
-        if ( (errno == 0) || (errno == ESRCH) || (errno == EBADF) || (errno == EPERM) ) {
+        if ( (errno == 0) || (errno == ESRCH) || (errno == EBADF) || (errno == EPERM) || (errno == ENOENT)) {
             singularity_message(VERBOSE3, "Not updating group file as passwd entry for UID %d not found.\n", uid);
             return(0);
         } else {
@@ -114,7 +114,7 @@ int singularity_file_group(void) {
     if ( grent ) {
         singularity_message(VERBOSE, "Updating group file with user info\n");
         fprintf(file_fp, "\n%s:x:%u:%s\n", grent->gr_name, grent->gr_gid, pwent->pw_name);
-    } else if ( (errno == 0) || (errno == ESRCH) || (errno == EBADF) || (errno == EPERM) ) {
+    } else if ( (errno == 0) || (errno == ESRCH) || (errno == EBADF) || (errno == EPERM) || (errno == ENOENT) ) {
         // It's rare, but certainly possible to have a GID that's not a group entry in this system.
         // According to the man page, all of the above errno's can indicate this situation.
         singularity_message(VERBOSE3, "Skipping GID %d as group entry does not exist.\n", gid);
@@ -139,7 +139,7 @@ int singularity_file_group(void) {
                 singularity_message(VERBOSE3, "Found supplementary group membership in: %d\n", gids[i]);
                 singularity_message(VERBOSE2, "Adding user's supplementary group ('%s') info to template group file\n", grent->gr_name);
                 fprintf(file_fp, "%s:x:%u:%s\n", gr->gr_name, gr->gr_gid, pwent->pw_name);
-            } else if ( (errno == 0) || (errno == ESRCH) || (errno == EBADF) || (errno == EPERM) ) {
+            } else if ( (errno == 0) || (errno == ESRCH) || (errno == EBADF) || (errno == EPERM) || (errno == ENOENT)) {
                 singularity_message(VERBOSE3, "Skipping GID %d as group entry does not exist.\n", gids[i]);
             } else {
                 singularity_message(ERROR, "Failed to lookup GID %d group entry: %s\n", gids[i], strerror(errno));

@@ -18,7 +18,7 @@
  * 
  */
 
-
+#define _GNU_SOURCE
 #include <stdio.h>
 #include <stdlib.h>
 #include <unistd.h>
@@ -42,7 +42,7 @@ FILE *config_fp = NULL;
 int singularity_config_open(char *config_path) {
     singularity_message(VERBOSE, "Opening configuration file: %s\n", config_path);
     if ( is_file(config_path) == 0 ) {
-        if ( ( config_fp = fopen(config_path, "r") ) != NULL ) { // Flawfinder: ignore (we have to open the file...)
+        if ( ( config_fp = fopen(config_path, "re") ) != NULL ) { // Flawfinder: ignore (we have to open the file...)
             return(0);
         }
     }
@@ -85,9 +85,6 @@ char *singularity_config_get_value(char *key) {
             if ( strcmp(config_key, key) == 0 ) {
                 if ( ( config_value = strdup(strtok(NULL, "=")) ) != NULL ) {
                     chomp(config_value);
-                    if ( config_value[0] == ' ' ) {
-                        config_value++;
-                    }
                     singularity_message(VERBOSE2, "Got config key %s (= '%s')\n", key, config_value);
                     return(config_value);
                 }

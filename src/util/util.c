@@ -136,8 +136,12 @@ char *joinpath(const char * path1, const char * path2) {
         path2++;
     }
 
-    ret = (char *) malloc(strlength(tmp_path1, PATH_MAX) + strlength(path2, PATH_MAX) + 2);
-    snprintf(ret, strlength(tmp_path1, PATH_MAX) + strlen(path2) + 2, "%s/%s", tmp_path1, path2); // Flawfinder: ignore
+    size_t ret_pathlen = strlength(tmp_path1, PATH_MAX) + strlength(path2, PATH_MAX) + 2;
+    ret = (char *) malloc(ret_pathlen);
+    if (snprintf(ret, ret_pathlen, "%s/%s", tmp_path1, path2) >= ret_pathlen) { // Flawfinder: ignore
+        singularity_message(ERROR, "Overly-long path name.\n");
+        ABORT(255);
+    }
 
     return(ret);
 }
@@ -147,20 +151,38 @@ char *strjoin(char *str1, char *str2) {
     int len = strlength(str1, 2048) + strlength(str2, 2048) + 1;
 
     ret = (char *) malloc(len);
-    snprintf(ret, len, "%s%s", str1, str2); // Flawfinder: ignore
+    if (snprintf(ret, len, "%s%s", str1, str2) >= len) { // Flawfinder: ignore
+       singularity_message(ERROR, "Overly-long string encountered.\n");
+       ABORT(255);
+    }
 
     return(ret);
 }
 
 void chomp(char *str) {
-    int len = strlength(str, 4096);
-    if ( str[len - 1] == ' ') {
-        str[len - 1] = '\0';
+    int len;
+    int i;
+    
+    len = strlength(str, 4096);
+
+    while ( str[0] == ' ' ) {
+        for ( i = 1; i < len; i++ ) {
+	    str[i-1] = str[i];
+	}
+	str[len] = '\0';
+	len--;
     }
-    if ( str[0] == '\n') {
+
+    while ( str[len - 1] == ' ' ) {
+        str[len - 1] = '\0';
+	len--;
+    }
+
+    if ( str[0] == '\n' ) {
         str[0] = '\0';
     }
-    if ( str[len - 1] == '\n') {
+
+    if ( str[len - 1] == '\n' ) {
         str[len - 1] = '\0';
     }
 }

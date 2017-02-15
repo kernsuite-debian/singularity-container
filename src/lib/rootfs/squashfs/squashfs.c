@@ -18,6 +18,7 @@
  * 
 */
 
+#define _GNU_SOURCE
 #include <errno.h>
 #include <fcntl.h>
 #include <stdio.h>
@@ -69,7 +70,7 @@ int rootfs_squashfs_init(char *source, char *mount_dir) {
 
     mount_point = strdup(mount_dir);
 
-    if ( ( image_fp = fopen(source, "r") ) == NULL ) { // Flawfinder: ignore
+    if ( ( image_fp = fopen(source, "re") ) == NULL ) { // Flawfinder: ignore
         singularity_message(ERROR, "Could not open image (read only) %s: %s\n", source, strerror(errno));
         ABORT(255);
     }
@@ -104,7 +105,7 @@ int rootfs_squashfs_mount(void) {
 
     singularity_priv_escalate();
     singularity_message(VERBOSE, "Mounting squashfs image\n");
-    if ( mount(loop_dev, mount_point, "squashfs", MS_NOSUID|MS_RDONLY, "errors=remount-ro") < 0 ) {
+    if ( mount(loop_dev, mount_point, "squashfs", MS_NOSUID|MS_RDONLY|MS_NODEV, "errors=remount-ro") < 0 ) {
         singularity_message(ERROR, "Failed to mount squashfs image in (read only): %s\n", strerror(errno));
         ABORT(255);
     }

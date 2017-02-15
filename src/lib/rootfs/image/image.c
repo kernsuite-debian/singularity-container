@@ -18,6 +18,7 @@
  * 
 */
 
+#define _GNU_SOURCE
 #include <errno.h>
 #include <fcntl.h>
 #include <stdio.h>
@@ -66,7 +67,7 @@ int rootfs_image_init(char *source, char *mount_dir) {
     mount_point = strdup(mount_dir);
 
     if ( envar_defined("SINGULARITY_WRITABLE") == TRUE ) {
-        if ( ( image_fp = fopen(source, "r+") ) == NULL ) { // Flawfinder: ignore
+        if ( ( image_fp = fopen(source, "r+e") ) == NULL ) { // Flawfinder: ignore
             singularity_message(ERROR, "Could not open image (read/write) %s: %s\n", source, strerror(errno));
             ABORT(255);
         }
@@ -79,7 +80,7 @@ int rootfs_image_init(char *source, char *mount_dir) {
         }
         read_write = 1;
     } else {
-        if ( ( image_fp = fopen(source, "r") ) == NULL ) { // Flawfinder: ignore
+        if ( ( image_fp = fopen(source, "re") ) == NULL ) { // Flawfinder: ignore
             singularity_message(ERROR, "Could not open image (read only) %s: %s\n", source, strerror(errno));
             ABORT(255);
         }
@@ -100,6 +101,7 @@ int rootfs_image_init(char *source, char *mount_dir) {
 
 
 int rootfs_image_mount(void) {
+    int opts = MS_NOSUID;
 
     if ( mount_point == NULL ) {
         singularity_message(ERROR, "Called image_mount but image_init() hasn't been called\n");
@@ -122,21 +124,28 @@ int rootfs_image_mount(void) {
         ABORT(255);
     }
 
+    if ( getuid() != 0 ) {
+        opts |= MS_NODEV;
+    }
 
     if ( read_write > 0 ) {
         singularity_message(VERBOSE, "Mounting image in read/write\n");
         singularity_priv_escalate();
-        if ( mount(loop_dev, mount_point, "ext3", MS_NOSUID, "errors=remount-ro") < 0 ) {
-            singularity_message(ERROR, "Failed to mount image in (read/write): %s\n", strerror(errno));
-            ABORT(255);
+        if ( mount(loop_dev, mount_point, "ext3", opts, "errors=remount-ro") < 0 ) {
+            if ( mount(loop_dev, mount_point, "ext4", opts, "errors=remount-ro") < 0 ) {
+                singularity_message(ERROR, "Failed to mount image in (read/write): %s\n", strerror(errno));
+                ABORT(255);
+            }
         }
         singularity_priv_drop();
     } else {
         singularity_priv_escalate();
         singularity_message(VERBOSE, "Mounting image in read/only\n");
-        if ( mount(loop_dev, mount_point, "ext3", MS_NOSUID|MS_RDONLY, "errors=remount-ro") < 0 ) {
-            singularity_message(ERROR, "Failed to mount image in (read only): %s\n", strerror(errno));
-            ABORT(255);
+        if ( mount(loop_dev, mount_point, "ext3", opts|MS_RDONLY, "errors=remount-ro") < 0 ) {
+            if ( mount(loop_dev, mount_point, "ext4", opts|MS_RDONLY, "errors=remount-ro") < 0 ) {
+                singularity_message(ERROR, "Failed to mount image in (read only): %s\n", strerror(errno));
+                ABORT(255);
+            }
         }
         singularity_priv_drop();
     }

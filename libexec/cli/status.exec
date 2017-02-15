@@ -34,24 +34,52 @@ else
     exit 1
 fi
 
-if [ -z "${SINGULARITY_LOOPDEV}" ]; then
-    message ERROR "SINGULARITY_LOOPDEV not defined....\n"
+## Init Singularity environment
+if [ -f "$SINGULARITY_sysconfdir/singularity/init" ]; then
+    . "$SINGULARITY_sysconfdir/singularity/init"
+fi
+
+
+if ! USERID=`id --real --user`; then
+    message ERROR "Could not ascertain user ID\n"
     exit 255
 fi
 
-if [ ! -b "$SINGULARITY_LOOPDEV" ]; then
-    message ERROR "SINGULARITY_LOOPDEV is defined but not a block device: $SINGULARITY_LOOPDEV\n"
-    exit 255
+if [ "$USERID" = 0 ]; then
+    USERID="*"
 fi
 
-if ! MKFS_PATH=`singularity_which "mkfs.ext3"`; then
-    message ERROR "Could not locate program: mkfs.ext3\n"
-    exit 255
-fi
+while true; do
+    case ${1:-} in
+        -*)
+            message ERROR "Unknown option: ${1:-}\n"
+            exit 1
+        ;;
+        *)
+            break;
+        ;;
+    esac
+done
 
-message 1 "Formatting image with ext3 file system\n"
-
-eval "$MKFS_PATH" -E nodiscard -q "$SINGULARITY_LOOPDEV" >/dev/null
 
 
-message 1 "Done.\n"
+####
+# This entire file is a template for functionality that needs to be written
+# still!
+
+# This is a configurable option, needs to be set accordingly!
+SESSION_GLOB="/tmp/.singularity-session-${USERID}.*/daemon.pid"
+
+
+# Show status here...
+
+for i in $SESSION_GLOB; do
+    if [ -f "$i" ]; then
+        SESSION_DIR=`dirname "$i"`
+        IMAGE_NAME=`cat "$SESSION_DIR/image"`
+        DAEMON_PID=`cat "$SESSION_DIR/daemon.pid"`
+
+        echo "$IMAGE_NAME $DAEMON_PID"
+    fi
+done
+

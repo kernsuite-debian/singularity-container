@@ -45,6 +45,8 @@ int singularity_file_passwd(void) {
     FILE *file_fp;
     char *source_file;
     char *tmp_file;
+    char *home;
+    char *homedir = NULL;
     uid_t uid = singularity_priv_getuid();
     struct passwd *pwent = getpwuid(uid);
     char *containerdir = singularity_rootfs_dir();
@@ -95,16 +97,25 @@ int singularity_file_passwd(void) {
         ABORT(255);
     }
 
-    singularity_message(VERBOSE, "Creating template passwd file and appending user data\n");
-    if ( ( file_fp = fopen(tmp_file, "a") ) == NULL ) { // Flawfinder: ignore
-        singularity_message(ERROR, "Could not open template passwd file %s: %s\n", tmp_file, strerror(errno));
-        ABORT(255);
+    if ( ( home = envar_path("SINGULARITY_HOME") ) != NULL ) {
+        char *colon = strchr(home, ':');
+        if ( colon != NULL ) {
+            homedir = colon + 1;
+            setenv("HOME", homedir, 1);
+        }
     }
-    fprintf(file_fp, "\n%s:x:%d:%d:%s:%s:%s\n", pwent->pw_name, pwent->pw_uid, pwent->pw_gid, pwent->pw_gecos, pwent->pw_dir, pwent->pw_shell);
+    if ( homedir == NULL ) {
+        homedir = pwent->pw_dir;
+    }
+
+    fprintf(file_fp, "%s:x:%d:%d:%s:%s:%s\n", pwent->pw_name, pwent->pw_uid, pwent->pw_gid, pwent->pw_gecos, homedir, pwent->pw_shell);
     fclose(file_fp);
 
 
     container_file_bind(tmp_file, "/etc/passwd");
+
+    // set HOME to the homedir, because it might be different than outside
+    setenv("HOME", homedir, 1);
 
     return(0);
 }

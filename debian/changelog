@@ -9,6 +9,8 @@ singularity-container (2.3-1) unstable; urgency=medium
       /var/lib explicitly
     - export SINGULARITY_CACHEDIR env var to instruct singularity
       to not attempt create cachedir somewhere under /nonexistent path
+      Also added a patch to not fail to create that cache directory if 
+      parent doesn't exist, and use ~/.cache/singularity
   * debian/control
     - Python to build-depends
 

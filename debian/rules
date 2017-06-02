@@ -4,6 +4,7 @@
 export DEB_BUILD_MAINT_OPTIONS = hardening=+all
 
 PKGDIR=debian/singularity-container
+export SINGULARITY_CACHEDIR=$(PKGDIR)/var/lib/singularity/cache
 
 %:
 	dh $@  --with autoreconf

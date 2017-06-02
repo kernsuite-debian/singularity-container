@@ -3,10 +3,12 @@ singularity-container (2.3-1) unstable; urgency=medium
   * Fresh upstream minor release
   * debian/patches -- all dropped (upstreamed)
   * debian/copyright -- updated copyright holders/years
-  * debian/rules -- a few path tune ups for permissions tuning as introduced 
-    upstream
+  * debian/rules
+    - a few path tune ups for permissions tuning as introduced upstream
+    - apparently still uses /var as default for localstatedir, so specified
+      /var/lib explicitly
 
- -- Yaroslav Halchenko <debian@onerussian.com>  Fri, 02 Jun 2017 12:43:50 -0400
+ -- Yaroslav Halchenko <debian@onerussian.com>  Fri, 02 Jun 2017 13:12:42 -0400
 
 singularity-container (2.2.1-1) experimental; urgency=medium
 

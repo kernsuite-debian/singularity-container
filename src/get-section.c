@@ -1,7 +1,9 @@
 /* 
- * Copyright (c) 2015-2016, Gregory M. Kurtzer. All rights reserved.
+ * Copyright (c) 2017, SingularityWare, LLC. All rights reserved.
+ *
+ * Copyright (c) 2015-2017, Gregory M. Kurtzer. All rights reserved.
  * 
- * “Singularity” Copyright (c) 2016, The Regents of the University of California,
+ * Copyright (c) 2016-2017, The Regents of the University of California,
  * through Lawrence Berkeley National Laboratory (subject to receipt of any
  * required approvals from the U.S. Dept. of Energy).  All rights reserved.
  * 
@@ -32,7 +34,6 @@
 #include "config.h"
 #include "util/file.h"
 #include "util/util.h"
-#include "lib/singularity.h"
 
 
 #define MAX_LINE_LEN 4096
@@ -41,11 +42,12 @@
 int main(int argc, char ** argv) {
     char *section;
     char *file;
-    int toggle_retval = 1;
+    int toggle_section = 0;
+    int retval = 1;
     FILE *input;
-    char *line = (char *)malloc(MAX_LINE_LEN);;
+    char *line = (char *)malloc(MAX_LINE_LEN);
 
-    if ( argc < 2 ) {
+    if ( argc < 3 ) {
         printf("USAGE: %s [section] [file]\n", argv[0]);
         exit(0);
     }
@@ -63,16 +65,20 @@ int main(int argc, char ** argv) {
         ABORT(255);
     }
 
-    singularity_message(DEBUG, "Iterating through /proc/mounts\n");
+    singularity_message(DEBUG, "Iterating through file looking for sections matching: %%%s\n", section);
     while ( fgets(line, MAX_LINE_LEN, input) != NULL ) {
         if ( strncmp(line, strjoin("%", section), strlength(section, 128) + 1) == 0 ) {
-            toggle_retval = 0;
-        } else if ( ( toggle_retval == 0 ) && ( strncmp(line, "%", 1) == 0 ) ) {
-            break;
-        } else if ( toggle_retval == 0 ) {
+            toggle_section = 1;
+            retval = 0;
+        } else if ( ( toggle_section == 1 ) && ( strncmp(line, "%", 1) == 0 ) ) {
+            toggle_section = 0;
+        } else if ( toggle_section == 1 ) {
             printf("%s", line);
         }
     }
-
-    return(toggle_retval);
+    fclose(input);
+    free(section);
+    free(file);
+    free(line);
+    return(retval);
 }

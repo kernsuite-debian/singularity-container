@@ -1,8 +1,8 @@
-SUBDIRS = docker
+SUBDIRS = docker shub helpers
 
 scriptlibexecdir = $(libexecdir)/singularity/python
 
-dist_scriptlibexec_SCRIPTS = cli.py __init__.py utils.py
+dist_scriptlibexec_DATA = defaults.py __init__.py message.py shell.py sutils.py base.py templates.py
+dist_scriptlibexec_SCRIPTS = import.py pull.py size.py
 
 MAINTAINERCLEANFILES = Makefile.in
-

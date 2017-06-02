@@ -1,7 +1,9 @@
 /* 
- * Copyright (c) 2015-2016, Gregory M. Kurtzer. All rights reserved.
+ * Copyright (c) 2017, SingularityWare, LLC. All rights reserved.
+ *
+ * Copyright (c) 2015-2017, Gregory M. Kurtzer. All rights reserved.
  * 
- * “Singularity” Copyright (c) 2016, The Regents of the University of California,
+ * Copyright (c) 2016-2017, The Regents of the University of California,
  * through Lawrence Berkeley National Laboratory (subject to receipt of any
  * required approvals from the U.S. Dept. of Energy).  All rights reserved.
  * 
@@ -37,8 +39,8 @@
 
 #include "config.h"
 #include "util/util.h"
-#include "lib/message.h"
-#include "lib/privilege.h"
+#include "util/message.h"
+#include "util/privilege.h"
 
 char *file_id(char *path) {
     struct stat filestat;
@@ -61,6 +63,61 @@ char *file_id(char *path) {
     return(ret);
 }
 
+char *file_devino(char *path) {
+    struct stat filestat;
+    char *ret;
+
+    singularity_message(DEBUG, "Called file_devino(%s)\n", path);
+
+    // Stat path
+    if (lstat(path, &filestat) < 0) {
+        return(NULL);
+    }
+
+    ret = (char *) malloc(128);
+    snprintf(ret, 128, "%d.%lu", (int)filestat.st_dev, (long unsigned)filestat.st_ino); // Flawfinder: ignore
+
+    singularity_message(DEBUG, "Returning file_devino(%s) = %s\n", path, ret);
+    return(ret);
+}
+
+int chk_perms(char *path, mode_t mode) {
+    struct stat filestat;
+
+    singularity_message(DEBUG, "Checking permissions on: %s\n", path);
+
+    // Stat path
+    if (stat(path, &filestat) < 0) {
+        return(-1);
+    }
+
+    if ( filestat.st_mode & mode ) {
+        singularity_message(WARNING, "Found appropriate permissions on file: %s\n", path);
+        return(0);
+    }
+
+    return(-1);
+}
+
+int chk_mode(char *path, mode_t mode) {
+    struct stat filestat;
+
+    singularity_message(DEBUG, "Checking exact mode (%o) on: %s\n", mode, path);
+
+    // Stat path
+    if (stat(path, &filestat) < 0) {
+        return(-1);
+    }
+
+    if ( filestat.st_mode == mode ) {
+        singularity_message(DEBUG, "Found appropriate mode on file: %s\n", path);
+        return(0);
+    } else {
+        singularity_message(VERBOSE, "Found wrong permission on file %s: %o != %o\n", path, mode, filestat.st_mode);
+    }
+
+    return(-1);
+}
 
 int is_file(char *path) {
     struct stat filestat;
@@ -228,7 +285,7 @@ int s_mkpath(char *dir, mode_t mode) {
         return(-1);
     }
 
-    if (strlength(dir, 2) == 1 && dir[0] == '/') {
+    if (strcmp(dir, "/") == 0 ) {
         return(0);
     }
 
@@ -258,13 +315,38 @@ int s_mkpath(char *dir, mode_t mode) {
 }
 
 int _unlink(const char *fpath, const struct stat *sb, int typeflag, struct FTW *ftwbuf) {
-//    printf("remove(%s)\n", fpath);
-    return(remove(fpath));
+    int retval;
+
+    if ( ( retval = remove(fpath) ) < 0 ) { 
+        singularity_message(WARNING, "Failed removing file: %s\n", fpath);
+    }
+
+    return(retval);
+}
+
+int _writable(const char *fpath, const struct stat *sb, int typeflag, struct FTW *ftwbuf) {
+    int retval;
+
+    if ( is_link((char *) fpath) == 0 ) {
+        return(0);
+    }
+
+    if ( ( retval = chmod(fpath, 0700) ) < 0 ) { // Flawfinder: ignore
+        singularity_message(WARNING, "Failed changing permission of file: %s\n", fpath);
+    }
+
+    // Always return success
+    return(0);
 }
 
 int s_rmdir(char *dir) {
 
     singularity_message(DEBUG, "Removing directory: %s\n", dir);
+    if ( nftw(dir, _writable, 32, FTW_MOUNT|FTW_PHYS) < 0 ) {
+        singularity_message(ERROR, "Failed preparing directory for removal: %s\n", dir);
+        ABORT(255);
+    }
+
     return(nftw(dir, _unlink, 32, FTW_DEPTH|FTW_MOUNT|FTW_PHYS));
 }
 
@@ -297,12 +379,16 @@ int copy_file(char * source, char * dest) {
     singularity_message(DEBUG, "Calling fstat() on source file descriptor: %d\n", fileno(fp_s));
     if ( fstat(fileno(fp_s), &filestat) < 0 ) {
         singularity_message(ERROR, "Could not fstat() on %s: %s\n", source, strerror(errno));
+        fclose(fp_s);
+        fclose(fp_d);
         return(-1);
     }
 
     singularity_message(DEBUG, "Cloning permission string of source to dest\n");
     if ( fchmod(fileno(fp_d), filestat.st_mode) < 0 ) {
         singularity_message(ERROR, "Could not set permission mode on %s: %s\n", dest, strerror(errno));
+        fclose(fp_s);
+        fclose(fp_d);
         return(-1);
     }
 
@@ -358,6 +444,7 @@ char *filecat(char *path) {
 
     if ( fseek(fd, 0L, SEEK_END) < 0 ) {
         singularity_message(ERROR, "Could not seek to end of file %s: %s\n", path, strerror(errno));
+        fclose(fd);
         return(NULL);
     }
 
@@ -385,7 +472,7 @@ char *basedir(char *dir) {
 
     singularity_message(DEBUG, "Obtaining basedir for: %s\n", dir);
 
-    while ( strcmp(testdir, "/") != 0 ) {
+    while ( ( strcmp(testdir, "/") != 0 ) && ( strcmp(testdir, ".") != 0 ) ) {
         singularity_message(DEBUG, "Iterating basedir: %s\n", testdir);
 
         ret = strdup(testdir);

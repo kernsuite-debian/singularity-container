@@ -1,5 +1,10 @@
-[![Build Status](https://travis-ci.org/gmkurtzer/singularity.svg?branch=master)](https://travis-ci.org/gmkurtzer/singularity)
+[![Build Status](https://travis-ci.org/singularityware/singularity.svg?branch=master)](https://travis-ci.org/singularityware/singularity)
 
+- [Guidelines for Contributing](CONTRIBUTING.md)
+- [Pull Request Template](.github/PULL_REQUEST_TEMPLATE.md)
+- [Project License](LICENSE.md)
+- [Documentation](http://singularity.lbl.gov/)
+- [Citation](http://journals.plos.org/plosone/article?id=10.1371/journal.pone.0177459)
 
 # Singularity - Enabling users to have full control of their environment.
 
@@ -9,7 +14,7 @@ environment for one the user controls!
 Let's say you are running Ubuntu on your workstation or server, but you
 have an application which only runs on Red Hat Enterprise Linux 6.3.
 Singularity can instantly virtualize the operating system, without
-having root access, and allow you to run that application in it's native
+having root access, and allow you to run that application in its native
 environment!
 
 # About
@@ -114,15 +119,10 @@ modifications necessary.
 
 Here is an example of a very simple bootstrap definition file for CentOS:
 
-    RELEASE=7
-    MirrorURL "http://mirror.centos.org/centos-${RELEASE}/${RELEASE}/os/\$basearch/"
-     
-    Setup
-    Bootstrap
-     
-    InstallPkgs procps-ng vim-minimal
-     
-    Cleanup
+    BootStrap: yum
+    OSVersion: 7
+    MirrorURL: http://mirror.centos.org/centos-%{OSVERSION}/%{OSVERSION}/os/$basearch/
+    Include: yum
 
 Once you have created your bootstrap definition, you can build your
 Singularity container image by first creating a blank image, and then
@@ -141,7 +141,7 @@ From there we can immediately start using the container:
     hello world
     [gmk@centos7-x64 demo]$ 
 
-And if I do this same process again, while changing the **RELEASE**
+And if I do this same process again, while changing the **OSVersion**
 variable in the bootstrap definition to **6** (where previously it was
 automatically ascertained by querying the RPM database), we can
 essentially build a CentOS-6 image in exactly the same manner as
@@ -156,15 +156,21 @@ above. Doing so reveals this:
 And as expected, the Python version we now see is what comes from by 
 default in CentOS-6.
 
+
 # Cite as:
+
+```
+Kurtzer GM, Sochat V, Bauer MW (2017) Singularity: Scientific containers for mobility of compute. PLoS ONE 12(5): e0177459. https://doi.org/10.1371/journal.pone.0177459
+```
+
+We also have a Zenodo citation:
+
+```
 Kurtzer, Gregory M.. (2016). Singularity 2.1.2 - Linux application and environment
 containers for science. 10.5281/zenodo.60736
 
 http://dx.doi.org/10.5281/zenodo.60736
-
+```
 
 # Webpage
-We are working on documentation and web pages now, but checkout the work
-in progress here:
-
-http://singularity.lbl.gov/
+We have full documentation at [http://singularity.lbl.gov/](http://singularity.lbl.gov/), and [welcome contributions](http://www.github.com/singularityware/singularityware.github.io).

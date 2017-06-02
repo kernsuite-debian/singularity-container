@@ -5,8 +5,9 @@ Source: https://github.com/gmkurtzer/singularity
 Files-Excluded: debian
 
 Files: *
-Copyright: 2015-2016, Gregory M. Kurtzer <gmkurtzer@lbl.gov>
-           2016, The Regents of the University of California
+Copyright: 2015-2017, Gregory M. Kurtzer <gmkurtzer@lbl.gov>
+           2016-2017, The Regents of the University of California
+           2017, SingularityWare, LLC
 License: BSD-3-Clause-LBNL
 
 Files: libexec/docker-import.sh
@@ -15,7 +16,7 @@ License: BSD-3-Clause-LBNL
 
 Files: debian/*
 Copyright: 2016, Dave Love <fx@gnu.org>
-           2016, Yaroslav Halchenko <debian@onerussian.com>
+           2016-2017, Yaroslav Halchenko <debian@onerussian.com>
 License: BSD-2-clause
 
 License: BSD-3-Clause-LBNL

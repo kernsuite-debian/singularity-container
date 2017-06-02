@@ -1,7 +1,9 @@
 /* 
- * Copyright (c) 2015-2016, Gregory M. Kurtzer. All rights reserved.
+ * Copyright (c) 2017, SingularityWare, LLC. All rights reserved.
+ *
+ * Copyright (c) 2015-2017, Gregory M. Kurtzer. All rights reserved.
  * 
- * “Singularity” Copyright (c) 2016, The Regents of the University of California,
+ * Copyright (c) 2016-2017, The Regents of the University of California,
  * through Lawrence Berkeley National Laboratory (subject to receipt of any
  * required approvals from the U.S. Dept. of Energy).  All rights reserved.
  * 
@@ -36,13 +38,15 @@
 #include <time.h>
 #include <linux/limits.h>
 #include <ctype.h>
+#include <pwd.h>
 
 #include "config.h"
 #include "util/util.h"
-#include "lib/message.h"
+#include "util/message.h"
+#include "util/privilege.h"
 
 
-char *envar(char *name, char *allowed, int len) {
+char *envar_get(char *name, char *allowed, int len) {
     char *ret;
     char *env = getenv(name); // Flawfinder: ignore
     int count;
@@ -69,10 +73,12 @@ char *envar(char *name, char *allowed, int len) {
         if ( isalnum(test_char) > 0 ) {
             success = 1;
         } else {
-            for (c=0; allowed[c] != '\0'; c++) {
-                if ( test_char == allowed[c] ) {
-                    success = 1;
-                    continue;
+            if ( allowed != NULL ) {
+                for (c=0; allowed[c] != '\0'; c++) {
+                    if ( test_char == allowed[c] ) {
+                        success = 1;
+                        continue;
+                    }
                 }
             }
         }
@@ -100,18 +106,47 @@ int envar_defined(char *name) {
 
 char *envar_path(char *name) {
     singularity_message(DEBUG, "Checking environment variable is valid path: '%s'\n", name);
-    return(envar(name, "/._-=,:", PATH_MAX));
+    return(envar_get(name, "/._+-=,:", PATH_MAX));
 }
 
+int envar_set(char *key, char *value, int overwrite) {
+    if ( key == NULL ) {
+        singularity_message(VERBOSE2, "Not setting envar, null key\n");
+        return(-1);
+    }
 
-int intlen(int input) {
+    if ( value == NULL ) {
+        singularity_message(DEBUG, "Unsetting environment variable: %s\n", key);
+        return(unsetenv(key));
+    }
+
+    singularity_message(DEBUG, "Setting environment variable: '%s' = '%s'\n", key, value);
+
+    return(setenv(key, value, overwrite));
+}
+
+int intlen(int input_int) {
     unsigned int len = 1;
+    int input = input_int;
 
     while (input /= 10) {
         len ++;
     }
 
     return(len);
+}
+
+char *uppercase(char *string) {
+    int len = strlength(string, 4096);
+    char *upperkey = strdup(string);
+    int i = 0;
+
+    while ( i <= len ) {
+        upperkey[i] = toupper(string[i]);
+        i++;
+    }
+    singularity_message(DEBUG, "Transformed to uppercase: '%s' -> '%s'\n", string, upperkey);
+    return(upperkey);
 }
 
 char *int2str(int num) {
@@ -124,10 +159,20 @@ char *int2str(int num) {
     return(ret);
 }
 
-char *joinpath(const char * path1, const char * path2) {
+char *joinpath(const char * path1, const char * path2_in) {
+    if ( path1 == NULL ) {
+        singularity_message(ERROR, "joinpath() called with NULL path1\n");
+        ABORT(255);
+    }
+    if ( path2_in == NULL ) {
+        singularity_message(ERROR, "joinpath() called with NULL path2\n");
+        ABORT(255);
+    }
+
+    const char *path2 = path2_in;
     char *tmp_path1 = strdup(path1);
     int path1_len = strlength(tmp_path1, 4096);
-    char *ret;
+    char *ret = NULL;
 
     if ( tmp_path1[path1_len - 1] == '/' ) {
         tmp_path1[path1_len - 1] = '\0';
@@ -159,25 +204,50 @@ char *strjoin(char *str1, char *str2) {
     return(ret);
 }
 
+void chomp_noline(char *str) {
+  int len;
+  int i;
+
+  len = strlength(str, 4096);
+
+  while ( str[0] == ' ' ) {
+    for ( i = 1; i < len; i++ ) {
+      str[i-1] = str[i];
+    }
+    str[len] = '\0';
+    len--;
+  }
+
+  while ( str[len - 1] == ' ' ) {
+    str[len - 1] = '\0';
+    len--;
+  }
+}
+
 void chomp(char *str) {
+    if (!str) {return;}
+
     int len;
     int i;
     
     len = strlength(str, 4096);
 
-    while ( str[0] == ' ' ) {
-        for ( i = 1; i < len; i++ ) {
-	    str[i-1] = str[i];
-	}
-	str[len] = '\0';
-	len--;
+    // Trim leading whitespace by shifting array.
+    i = 0;
+    while ( isspace(str[i]) ) {i++;}
+    if (i) {
+        len -= i;
+        memmove(str, str+i, len);
+        str[len] = '\0';
     }
-
+    
+    // Trim trailing whitespace and redefine NULL
     while ( str[len - 1] == ' ' ) {
         str[len - 1] = '\0';
-	len--;
+        len--;
     }
 
+    // If str starts with a new line, there is nothing here
     if ( str[0] == '\n' ) {
         str[0] = '\0';
     }
@@ -185,6 +255,14 @@ void chomp(char *str) {
     if ( str[len - 1] == '\n' ) {
         str[len - 1] = '\0';
     }
+
+}
+
+void chomp_comments(char *str) {
+    if (!str) {return;}
+    char *rest = str;
+    str = strtok_r(str, "#", &rest);
+    chomp(str);
 }
 
 int strlength(const char *string, int max_len) {
@@ -195,7 +273,6 @@ int strlength(const char *string, int max_len) {
     return(len);
 }
 
-/*
 char *random_string(int length) {
     static const char characters[] = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789";
     char *ret;
@@ -204,7 +281,7 @@ char *random_string(int length) {
 
     ret = (char *) malloc(length);
  
-    srand(time(NULL) * pid);
+    srand(time(NULL) * pid); // Flawfinder: ignore (complete mathmetical randomness is not required)
     for (i = 0; i < length; ++i) {
         ret[i] = characters[rand() % (sizeof(characters) - 1)];
     }
@@ -213,7 +290,7 @@ char *random_string(int length) {
 
     return(ret);
 }
-*/
+
 
 int str2int(const char *input_str, long int *output_num) {
     long int result;
@@ -237,3 +314,34 @@ int str2int(const char *input_str, long int *output_num) {
     errno = EINVAL;
     return -1;
 }
+
+
+int envclean(void) {
+    int retval = 0;
+    char **env = environ;
+    char **envclone;
+    int i;
+    int envlen = 0;
+
+    for(i = 0; env[i] != 0; i++) {
+        envlen++;
+    }
+
+    envclone = (char**) malloc(i * sizeof(char *));
+
+    for(i = 0; env[i] != 0; i++) {
+        envclone[i] = strdup(env[i]);
+    }
+
+    for(i = 0; i < envlen; i++) {
+        char *tok, *key;
+
+        key = strtok_r(envclone[i], "=", &tok);
+
+        singularity_message(DEBUG, "Unsetting environment variable: %s\n", key);
+        unsetenv(key);
+    }
+
+    return(retval);
+}
+

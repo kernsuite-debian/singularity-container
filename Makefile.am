@@ -3,7 +3,7 @@ SUBDIRS = bin etc libexec man src
 MAINTAINERCLEANFILES = Makefile.in aclocal.m4 configure ltmain.sh depcomp install-sh missing config.* *.m4 singularity-*.tar.gz singularity-*.rpm m4/* test.sh
 DISTCLEANFILES = Makefile test.sh
 CLEANFILES = 
-EXTRA_DIST = LICENSE README.md NEWS ChangeLog singularity.spec examples
+EXTRA_DIST = singularity.spec examples debian AUTHORS.md CONTRIBUTING.md COPYRIGHT.md INSTALL.md LICENSE-LBNL.md LICENSE.md README.md
 
 maintainer-clean-local:
 	rm -rf m4
@@ -17,5 +17,11 @@ install-perms:
 	@echo
 	@echo "install-perms is no longer required"
 	@echo
+
+install-data-hook:
+	install -d -m 0755 $(DESTDIR)$(localstatedir)/singularity/mnt/container
+	install -d -m 0755 $(DESTDIR)$(localstatedir)/singularity/mnt/session
+	install -d -m 0755 $(DESTDIR)$(localstatedir)/singularity/mnt/overlay
+
 
 ACLOCAL_AMFLAGS = -I m4

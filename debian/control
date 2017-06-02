@@ -10,6 +10,7 @@ Build-Depends:
  debhelper (>= 9),
  dh-autoreconf,
  help2man,
+ python,
 Standards-Version: 3.9.8
 Homepage: http://gmkurtzer.github.io/singularity
 Vcs-Git: https://anonscm.debian.org/git/collab-maint/singularity-container.git

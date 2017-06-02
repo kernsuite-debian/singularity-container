@@ -7,6 +7,8 @@ singularity-container (2.3-1) unstable; urgency=medium
     - a few path tune ups for permissions tuning as introduced upstream
     - apparently still uses /var as default for localstatedir, so specified
       /var/lib explicitly
+  * debian/control
+    - Python to build-depends
 
  -- Yaroslav Halchenko <debian@onerussian.com>  Fri, 02 Jun 2017 13:12:42 -0400
 

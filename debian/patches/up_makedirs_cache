@@ -1,11 +1,6 @@
 --- a/libexec/python/defaults.py
 +++ b/libexec/python/defaults.py
-@@ -103,11 +103,11 @@ if DISABLE_CACHE == True:
-     SINGULARITY_CACHE = tempfile.mkdtemp()
- else:
-     userhome = pwd.getpwuid(os.getuid())[5]
--    _cache = os.path.join(userhome,".singularity") 
-+    _cache = os.path.join(userhome, ".cache", "singularity")
+@@ -107,7 +107,7 @@ else:
      SINGULARITY_CACHE = getenv("SINGULARITY_CACHEDIR", default=_cache)
  
  if not os.path.exists(SINGULARITY_CACHE):

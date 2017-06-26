@@ -45,6 +45,9 @@
 int _singularity_runtime_ns_pid(void) {
     int enabled = -1;
 
+
+#ifdef SINGULARITY_NO_NEW_PRIVS
+    // Use PID namespace when NO_NEW_PRIVS is not supported
     if ( singularity_config_get_bool(ALLOW_PID_NS) <= 0 ) {
         singularity_message(VERBOSE2, "Not virtualizing PID namespace by configuration\n");
         return(0);
@@ -54,6 +57,7 @@ int _singularity_runtime_ns_pid(void) {
         singularity_message(VERBOSE2, "Not virtualizing PID namespace on user request\n");
         return(0);
     }
+#endif
 
 #ifdef NS_CLONE_NEWPID
     singularity_message(DEBUG, "Using PID namespace: CLONE_NEWPID\n");
@@ -87,13 +91,6 @@ int _singularity_runtime_ns_pid(void) {
 
     if ( enabled == 1 ) {
         // PID namespace requires a fork to activate!
-        singularity_fork_run();
-
-        // At this point, we are now PID 1; when we later exec the payload, it will also be PID 1.
-        // Unfortunately, PID 1 in Linux has special signal handling rules (the _only_ signal that
-        // will terminate the process is SIGKILL; all other signals are ignored).  Hence, we fork
-        // one more time.  This makes PID 1 a shim process and the payload process PID 2 (meaning
-        // that the payload gets the "normal" signal handling rules it would expect).
         singularity_fork_run();
 
         singularity_registry_set("PIDNS_ENABLED", "1");

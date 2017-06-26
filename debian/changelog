@@ -1,3 +1,14 @@
+singularity-container (2.3.1-1) unstable; urgency=high
+
+  * Fresh upstream minor release
+    - A potential escalation pathway was identified that could have
+    allowed a malicious user to escalate their privileges on hosts that do not
+    support the PR_SET_NO_NEW_PRIVS flag for the prctl() system call. This
+    release fixes this as well as several other identified bugs and potential
+    race conditions.
+
+ -- Yaroslav Halchenko <debian@onerussian.com>  Mon, 26 Jun 2017 16:04:51 -0700
+
 singularity-container (2.3-1) unstable; urgency=medium
 
   * Fresh upstream minor release

@@ -22,3 +22,6 @@
     - Nathan Lin <nathan.lin@yale.edu>
     - Ralph Castain <rhc@open-mpi.org>
     - Yaroslav Halchenko <debian@onerussian.com>
+    - Eduardo Arango <carlos.arango.gutierrez@correounivalle.edu.co>
+    - Oleksandr Moskalenko <om@rc.ufl.edu>
+    - Cedric Clerget <cedric.clerget@univ-fcomte.fr>

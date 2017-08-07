@@ -1,5 +1,9 @@
 #!/usr/bin/make -f
 
+srcpkg = $(shell LC_ALL=C dpkg-parsechangelog | grep '^Source:' | cut -d ' ' -f 2,2)
+debver = $(shell LC_ALL=C dpkg-parsechangelog | grep '^Version:' | cut -d ' ' -f 2,2 )
+uver = $(shell echo $(debver) | cut -d '-' -f 1,1 )
+
 #DH_VERBOSE=1
 export DEB_BUILD_MAINT_OPTIONS = hardening=+all
 
@@ -19,7 +23,7 @@ override_dh_auto_install:
 
 override_dh_installman:
 	: # Very sloppy man pages for now
-	debian/generate_manpages $(PKGDIR)
+	debian/generate_manpages $(PKGDIR) $(debver)
 	dh_installman
 
 override_dh_installdocs:

@@ -32,6 +32,7 @@ set -e
 set -u
 
 PKGDIR=$1
+VERSION=$2
 tbindir=$(mktemp -d)
 trap "rm -rf \"$tbindir\"" TERM INT EXIT
 
@@ -45,6 +46,6 @@ for b in singularity run-singularity; do
     sed -i -e "s,^prefix=.*,prefix=${PKGDIR}/usr,g" "$tbindir/$b"
     manpage=${PKGDIR}/usr/share/man/man1/$b.1
     PATH=$tbindir:$PATH
-        help2man -n "${desc[$b]}" --no-info "${tbindir}/$b" >| $manpage
+        help2man -n "${desc[$b]}" --no-info "${tbindir}/$b" --version-string "$VERSION" >| $manpage
     grep -q -e 'Error loading functions' $manpage && exit 1 || :
 done

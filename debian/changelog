@@ -1,3 +1,10 @@
+singularity-container (2.3.2-1) unstable; urgency=medium
+
+  * New upstream release
+    - debian/patches/up_makedirs_cache is no longer pertinent
+
+ -- Yaroslav Halchenko <debian@onerussian.com>  Sat, 07 Oct 2017 00:15:10 -0400
+
 singularity-container (2.3.1-2) unstable; urgency=medium
 
   * Provide version for help2man from this changelog (Closes: #871371)

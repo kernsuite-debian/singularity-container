@@ -7,6 +7,8 @@ singularity-container (2.4-1) experimental; urgency=medium
     - more info: http://singularity.lbl.gov/release-2-4
   * debian/control
     - fixed Homepage (thanks Afif Elghraoui) (Closes: #850227)
+  * debian/patches/reproducible_build
+    - thanks tiress Chris Lamb (Closes: #866169)
 
  -- Yaroslav Halchenko <debian@onerussian.com>  Thu, 12 Oct 2017 21:55:26 -0400
 

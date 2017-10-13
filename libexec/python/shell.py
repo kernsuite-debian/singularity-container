@@ -28,6 +28,8 @@ from message import bot
 from defaults import (
     DOCKER_API_BASE,
     NAMESPACE,
+    CUSTOM_REGISTRY,
+    CUSTOM_NAMESPACE,
     TAG
 )
 
@@ -67,7 +69,6 @@ def remove_image_uri(image, image_uri=None, quiet=False):
     if image_uri is not None:
         image = image.replace(image_uri, '')
     return image
-
 
 def parse_image_uri(image,
                     uri=None,
@@ -149,6 +150,12 @@ def parse_image_uri(image,
         registry = default_registry
         namespace = default_namespace
         repo_name = image[0]
+
+    # if user gave custom registry / namespace, use
+    if CUSTOM_NAMESPACE is not None:
+        namespace = CUSTOM_NAMESPACE
+    if CUSTOM_REGISTRY is not None:
+        registry = CUSTOM_REGISTRY
 
     if not quiet:
         bot.verbose("Registry: %s" % registry)

@@ -37,6 +37,7 @@ from shell import (
 from sutils import (
     add_http,
     clean_up,
+    get_image_format,
     read_file,
     run_command
 )
@@ -125,7 +126,7 @@ class SingularityApiConnection(ApiConnection):
                        manifest,
                        image_name=None,
                        download_folder=None,
-                       extract=True):
+                       extract=False):
 
         '''
 
@@ -143,6 +144,7 @@ class SingularityApiConnection(ApiConnection):
         image_file: the full path to the downloaded image
 
         '''
+
         if image_name is None:
             image_name = get_image_name(manifest)
 
@@ -156,11 +158,8 @@ class SingularityApiConnection(ApiConnection):
 
         if url is None:
             bot.error("%s is not ready for download" % image_name)
-            bot.error("please try when build completed or specify tag.")
+            bot.error("please try when build completes or specify tag.")
             sys.exit(1)
-
-        if not image_name.endswith('.gz'):
-            image_name = "%s.gz" % image_name
 
         if download_folder is not None:
             image_name = "%s/%s" % (download_folder, image_name)
@@ -170,9 +169,16 @@ class SingularityApiConnection(ApiConnection):
                                               file_name=image_name,
                                               show_progress=True)
 
-        if extract is True:
+        # Compressed ext3 images need extraction
+        image_type = get_image_format(image_file)
+        if image_type == "GZIP" or extract is True:
+
+            if not image_file.endswith('.gz'):
+                os.rename(image_file, "%s.gz" % image_file)
+
             if not bot.is_quiet():
                 print("Decompressing %s" % image_file)
+
             output = run_command(['gzip', '-d', '-f', image_file])
             image_file = image_file.replace('.gz', '')
 
@@ -185,11 +191,10 @@ class SingularityApiConnection(ApiConnection):
 
 
 # Various Helpers -----------------------------------------------
-def get_image_name(manifest, extension='img.gz'):
-    '''return the image name for a manifest
+def get_image_name(manifest, extension="simg"):
+    '''return the image name for a manifest. Estimates extension from file
     :param manifest: the image manifest with 'image'
                      as key with download link
-    :param use_hash: use the image hash instead of name
     '''
     from defaults import (SHUB_CONTAINERNAME,
                           SHUB_NAMEBYCOMMIT,
@@ -199,7 +204,7 @@ def get_image_name(manifest, extension='img.gz'):
     default_naming = True
 
     if SHUB_CONTAINERNAME is not None:
-        for replace in [" ", ".gz", ".img"]:
+        for replace in [" ", ".gz", ".img", ".simg"]:
             SHUB_CONTAINERNAME = SHUB_CONTAINERNAME.replace(replace, "")
         image_name = "%s.%s" % (SHUB_CONTAINERNAME, extension)
         default_naming = False
@@ -240,6 +245,7 @@ def extract_metadata(manifest, labelfile=None, prefix=None):
     '''extract_metadata will write a file of metadata from shub
     :param manifest: the manifest to use
     '''
+
     if prefix is None:
         prefix = ""
     prefix = prefix.upper()

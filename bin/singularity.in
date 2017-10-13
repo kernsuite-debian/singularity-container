@@ -28,6 +28,7 @@ libexecdir="@libexecdir@"
 sysconfdir="@sysconfdir@"
 localstatedir="@localstatedir@"
 bindir="@bindir@"
+home=`dirname  "$0"`
 
 SINGULARITY_version="@VERSION@@GIT_VERSION@"
 SINGULARITY_libexecdir="$libexecdir"
@@ -55,18 +56,9 @@ message 5 "Starting argument loop\n"
 while true; do
     case ${1:-} in
         -h|--help|help)
-            if [ -z "${2:-}" ]; then
-                C="singularity"
-            else
-                C="${2:-}"
-            fi
-            if [ -e "$SINGULARITY_libexecdir/singularity/cli/$C.help" ]; then
-                cat "$SINGULARITY_libexecdir/singularity/cli/$C.help"
-            else
-                message ERROR "No help exists for command: '$C'\n"
-                exit 1
-            fi
-            exit
+
+            shift
+            exec $SINGULARITY_libexecdir/singularity/cli/help.exec "$@"
         ;;
         -q|--quiet)
             SINGULARITY_MESSAGELEVEL=0
@@ -85,7 +77,7 @@ while true; do
             message 4 "Enabling debugging\n"
             shift
         ;;
-        -x|--shdebug)
+        -x|--sh-debug)
             SHELL_DEBUG=1
             export SHELL_DEBUG
             message 4 "Enabling shell debugging\n"
@@ -130,7 +122,7 @@ shift
 
 
 if [ -z "$SINGULARITY_COMMAND" ]; then
-    cat "$SINGULARITY_libexecdir/singularity/cli/singularity.help"
+    exec $SINGULARITY_libexecdir/singularity/cli/help.exec "$@"
     exit 0
 fi
 

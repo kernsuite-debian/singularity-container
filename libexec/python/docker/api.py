@@ -41,6 +41,8 @@ from sutils import (
 from defaults import (
     DOCKER_API_BASE,
     DOCKER_API_VERSION,
+    DOCKER_ARCHITECTURE,
+    DOCKER_OS,
     DOCKER_NUMBER,
     DOCKER_PREFIX,
     ENV_BASE,
@@ -71,6 +73,8 @@ class DockerApiConnection(ApiConnection):
         self.auth = None
         self.token = None
         self.token_url = None
+        self.schemaVersion = None
+        self.reverseLayers = False
         self.api_base = DOCKER_API_BASE
         self.api_version = DOCKER_API_VERSION
         self.manifest = None
@@ -104,7 +108,6 @@ class DockerApiConnection(ApiConnection):
         # specify wanting version 2 schema
         # meaning the correct order of digests
         # returned (base to child)
-
         return {"Accept": 'application/vnd.docker.distribution.manifest.v2+json,application/vnd.docker.distribution.manifest.list.v2+json,application/json',  # noqa
                'Content-Type': 'application/json; charset=utf-8'}  # noqa
 
@@ -202,19 +205,23 @@ class DockerApiConnection(ApiConnection):
     def get_images(self, manifest=None):
         '''get_images will return a list of layers from a manifest.
         The function is intended to work with both version
-        1 and 2 of the schema
+        1 and 2 of the schema. All layers (including redundant)
+        are returned.
+
+        For version 1 manifests: extraction is reversed
+
         :param manifest: the manifest to read_layers from
         '''
         if manifest is None:
             self.update_manifests()
-            manifest = self.manifestv1
+            manifest = self.manifest
 
         digests = []
+        layer_key = 'layers'
+        digest_key = 'digest'
 
         # https://github.com/docker/distribution/blob/master/docs/spec/manifest-v2-2.md#image-manifest  # noqa
         if 'layers' in manifest:
-            layer_key = 'layers'
-            digest_key = 'digest'
             bot.debug('Image manifest version 2.2 found.')
 
         # https://github.com/docker/distribution/blob/master/docs/spec/manifest-v2-1.md#example-manifest  # noqa
@@ -225,15 +232,21 @@ class DockerApiConnection(ApiConnection):
 
         else:
             msg = "Improperly formed manifest, "
-            msg += "layers or fsLayers must be present"
+            msg += "layers, manifests, or fsLayers must be present"
             bot.error(msg)
             sys.exit(1)
 
         for layer in manifest[layer_key]:
             if digest_key in layer:
-                if layer[digest_key] not in digests:
-                    bot.debug("Adding digest %s" % layer[digest_key])
-                    digests.append(layer[digest_key])
+                bot.debug("Adding digest %s" % layer[digest_key])
+                digests.append(layer[digest_key])
+
+        # Reverse layer order for manifest version 1.0
+        if self.reverseLayers is True:
+            message = 'v%s manifest, reversing layers' % self.schemaVersion
+            bot.debug(message)
+            digests.reverse()
+
         return digests
 
     def get_tags(self, return_response=False):
@@ -267,7 +280,7 @@ class DockerApiConnection(ApiConnection):
             bot.error("Error obtaining tags: %s" % base)
             sys.exit(1)
 
-    def get_manifest(self, old_version=False):
+    def get_manifest(self, old_version=False, version=None):
         '''get_manifest should return an image manifest
         for a particular repo and tag.  The image details
         are extracted when the client is generated.
@@ -285,17 +298,23 @@ class DockerApiConnection(ApiConnection):
                                           self.api_version,
                                           self.namespace,
                                           self.repo_name)
-        if self.version is not None:
+
+        # First priority given to calling function
+        if version is not None:
+            base = "%s/%s" % (base, version)
+
+        elif self.version is not None:
             base = "%s/%s" % (base, self.version)
+
         else:
             base = "%s/%s" % (base, self.repo_tag)
         bot.verbose("Obtaining manifest: %s" % base)
 
-        headers = self.headers
+        headers = self.headers.copy()
         if old_version is True:
             headers['Accept'] = 'application/json'
 
-        response = self.get(base, headers=self.headers)
+        response = self.get(base, headers=headers)
 
         try:
             response = json.loads(response)
@@ -319,15 +338,43 @@ class DockerApiConnection(ApiConnection):
         '''update manifests ensures that each of a version1 and version2
         manifest are present
         '''
+        bot.debug('Updating manifests.')
+
         if self.repo_name is None and self.namespace is None:
             bot.error("Insufficient metadata to get manifest.")
             sys.exit(1)
 
         # Get full image manifest, using version 2.0 of Docker Registry API
         if self.manifest is None:
+            bot.debug('MANIFEST (Primary): not found, making initial call.')
             self.manifest = self.get_manifest()
+            # This is the primary manifest schema version, determines if we
+            # need to reverse layers
+            self.schemaVersion = self.manifest['schemaVersion']
+            if self.schemaVersion == 1:
+                self.reverseLayers = True
+
         if self.manifestv1 is None:
+            bot.debug('MANIFEST (Metadata): not found, making initial call.')
             self.manifestv1 = self.get_manifest(old_version=True)
+
+        # https://docs.docker.com/registry/spec/manifest-v2-2/#manifest-list
+        if "manifests" in self.manifest:
+            for entry in self.manifest['manifests']:
+                if entry['platform']['architecture'] == DOCKER_ARCHITECTURE:
+                    if entry['platform']['os'] == DOCKER_OS:
+                        digest = entry['digest']
+                        bot.debug('Image manifest version 2.2 list found.')
+                        bot.debug('Obtaining architecture: %s, OS: %s'
+                                  % (DOCKER_ARCHITECTURE, DOCKER_OS))
+
+                        # Obtain specific os, architecture
+                        self.manifest = self.get_manifest(version=digest)
+                        break
+
+        # If we didn't get a new manifest, fall back to version 1
+        if "manifests" in self.manifest:
+            self.manifest = self.manifestv1
 
     def get_layer(self,
                   image_id,
@@ -399,11 +446,11 @@ class DockerApiConnection(ApiConnection):
         :round_up: if true, round up to nearest integer
         :return_mb: if true, defaults bytes are converted to MB
         '''
-        manifest = self.get_manifest()
+        self.update_manifests()
         size = None
-        if "layers" in manifest:
+        if "layers" in self.manifest:
             size = 0
-            for layer in manifest["layers"]:
+            for layer in self.manifest["layers"]:
                 if "size" in layer:
                     size += layer['size']
 

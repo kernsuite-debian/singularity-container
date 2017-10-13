@@ -1,3 +1,13 @@
+singularity-container (2.4-1) experimental; urgency=medium
+
+  * New upstream release
+    - atomic 'build' process (no need to pre-create an image)
+      - create command is deprecated in favor of image.create
+    - new default image format based on SquashFS
+    - more info: http://singularity.lbl.gov/release-2-4
+
+ -- Yaroslav Halchenko <debian@onerussian.com>  Thu, 12 Oct 2017 21:55:26 -0400
+
 singularity-container (2.3.2-1) unstable; urgency=medium
 
   * New upstream release

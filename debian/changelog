@@ -5,6 +5,8 @@ singularity-container (2.4-1) experimental; urgency=medium
       - create command is deprecated in favor of image.create
     - new default image format based on SquashFS
     - more info: http://singularity.lbl.gov/release-2-4
+  * debian/control
+    - fixed Homepage (thanks Afif Elghraoui) (Closes: #850227)
 
  -- Yaroslav Halchenko <debian@onerussian.com>  Thu, 12 Oct 2017 21:55:26 -0400
 

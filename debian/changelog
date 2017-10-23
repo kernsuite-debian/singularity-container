@@ -1,5 +1,6 @@
-singularity-container (2.4-1) experimental; urgency=medium
+singularity-container (2.4-1) xenial; urgency=medium
 
+  [ Yaroslav Halchenko ]
   * New upstream release
     - atomic 'build' process (no need to pre-create an image)
       - create command is deprecated in favor of image.create
@@ -10,7 +11,10 @@ singularity-container (2.4-1) experimental; urgency=medium
   * debian/patches/reproducible_build
     - thanks tiress Chris Lamb (Closes: #866169)
 
- -- Yaroslav Halchenko <debian@onerussian.com>  Thu, 12 Oct 2017 21:55:26 -0400
+  [ KERN packaging ]
+  * rebuild for KERN
+
+ -- KERN packaging <packaging@kernsuite.info>  Thu, 12 Oct 2017 21:55:26 -0400
 
 singularity-container (2.3.2-1) unstable; urgency=medium
 

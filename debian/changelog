@@ -6,7 +6,8 @@ singularity-container (2.4.1-1~exp1) UNRELEASED; urgency=medium
     - Addition of APP[app]_[LABELS,ENV,RUNSCRIPT,META] so apps can
       internally find one another
     - Exposing labels for SCI-F in environment
-
+  * debian/patches/reproducible_build
+    - Refreshed patch
 
  -- Mehdi Dogguy <mehdi@debian.org>  Mon, 27 Nov 2017 21:17:31 +0100
 

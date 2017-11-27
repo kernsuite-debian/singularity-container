@@ -1,5 +1,5 @@
 AC_PREREQ(2.59)
-AC_INIT([singularity],[2.4],[gmkurtzer@lbl.gov])
+AC_INIT([singularity],[2.4.1],[gmkurtzer@lbl.gov])
 
 if test -z "$prefix" -o "$prefix" = "NONE" ; then
   prefix=${ac_default_prefix}
@@ -249,27 +249,10 @@ if test -d "/proc/self/ns"; then
     SETNS_SYSCALL=1
     AC_MSG_RESULT([yes])
 else
+    SETNS_SYSCALL=0
     AC_MSG_RESULT([no])
 fi
 AC_SUBST(SETNS_SYSCALL)
-
-
-AC_MSG_CHECKING([for overlayfs])
-KVERS=`uname -r`
-if test -f "/lib/modules/$KVERS/modules.dep"; then
-    if grep -q 'overlay.ko' "/lib/modules/$KVERS/modules.dep"; then
-        AC_MSG_RESULT([yes])
-        ENABLE_OVERLAY_CONFIG_DEFAULT="yes"
-        OVERLAY_FS=1 # this adds it to testing
-    else
-        AC_MSG_RESULT([no])
-        ENABLE_OVERLAY_CONFIG_DEFAULT="no"
-    fi
-else
-    AC_MSG_RESULT([maybe])
-    ENABLE_OVERLAY_CONFIG_DEFAULT="try"
-fi
-AC_SUBST(ENABLE_OVERLAY_CONFIG_DEFAULT)
 
 
 # ---------------------------------------------------------------------
@@ -297,7 +280,6 @@ else
 
 fi
 
-AC_SUBST(OVERLAY_FS)
 AC_SUBST(SINGULARITY_DEFINES)
 
 AC_MSG_CHECKING([--with-slurm])
@@ -416,4 +398,11 @@ AC_CONFIG_FILES([
    libexec/python/helpers/json/Makefile
 
 ])
+
 AC_OUTPUT
+
+if test "$SETNS_SYSCALL" = "0"; then
+    echo
+    echo "WARNING: instance feature is disabled due to lack of kernel support"
+    echo
+fi

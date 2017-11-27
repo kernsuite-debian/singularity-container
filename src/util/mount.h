@@ -13,25 +13,12 @@
 */
 
 
-#define _GNU_SOURCE
+#ifndef __MOUNT_H_
+#define __MOUNT_H_
 
-#include <unistd.h>
-#include <errno.h>
-#include <sys/syscall.h>
+int singularity_mount(const char *source, const char *target,
+                      const char *filesystemtype, unsigned long mountflags,
+                      const void *data);
+int check_mounted(char *mountpoint);
 
-#if defined (NO_SETNS) && defined (SETNS_SYSCALL)
-
-#include "util/setns.h"
-
-int setns(int fd, int nstype) {
-    return syscall(__NR_setns, fd, nstype);
-}
-
-#elif defined (NO_SETNS) && !defined (SETNS_SYSCALL)
-
-int setns(int fd, int nstype) {
-    errno = ENOSYS;
-    return -1;
-}
-
-#endif /* NO_SETNS && SINGULARITY_SETNS_SYCALL */
+#endif /* __MOUNT_H_ */

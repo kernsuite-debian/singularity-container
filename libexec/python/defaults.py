@@ -50,7 +50,8 @@ def getenv(variable_key, default=None, required=False, silent=False):
         sys.exit(1)
 
     if silent:
-        bot.verbose2("%s found" % (variable_key))
+        if variable is not None:
+            bot.verbose2("%s found" % (variable_key))
     else:
         if variable is not None:
             bot.verbose2("%s found as %s" % (variable_key, variable))
@@ -152,7 +153,7 @@ DISABLE_HTTPS = convert2boolean(getenv("SINGULARITY_NOHTTPS", False))
 #######################################################################
 
 SINGULARITY_PULLFOLDER = getenv("SINGULARITY_PULLFOLDER", os.getcwd())
-SHUB_API_BASE = "singularity-hub.org"
+SHUB_API_BASE = "www.singularity-hub.org"
 SHUB_NAMEBYHASH = getenv("SHUB_NAMEBYHASH")
 SHUB_NAMEBYCOMMIT = getenv("SHUB_NAMEBYCOMMIT")
 SHUB_CONTAINERNAME = getenv("SHUB_CONTAINERNAME")

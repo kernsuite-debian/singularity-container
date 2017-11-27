@@ -137,11 +137,6 @@ if [ -z "${SINGULARITY_BUILDSECTION:-}" -o "${SINGULARITY_BUILDSECTION:-}" == "e
         message 1 "Adding environment to container\n"
 
         singularity_section_get "environment" "$SINGULARITY_BUILDDEF" >> "$SINGULARITY_ROOTFS/.singularity.d/env/90-environment.sh"
-
-        # Sourcing the environment
-        set +u
-        . "$SINGULARITY_ROOTFS/.singularity.d/env/90-environment.sh"
-        set -u
     fi
 else
     message 2 "Skipping environment section\n"
@@ -339,9 +334,6 @@ if [ -z "${SINGULARITY_BUILDSECTION:-}" -o "${SINGULARITY_BUILDSECTION:-}" == "a
             message 1 "Adding custom environment to ${APPNAME}\n"
             singularity_app_init "${APPNAME}" "${SINGULARITY_ROOTFS}"
             get_section "appenv ${APPNAME}" "$SINGULARITY_BUILDDEF" >> "$SINGULARITY_ROOTFS/scif/apps/${APPNAME}/scif/env/90-environment.sh"
-            set +u
-            . "$SINGULARITY_ROOTFS/scif/apps/${APPNAME}/scif/env/90-environment.sh"
-            set -u
         done
     fi
 fi
@@ -390,13 +382,41 @@ fi
 
 ## APPGLOBAL
 
+APPGLOBAL="${SINGULARITY_ROOTFS}/.singularity.d/env/94-appsbase.sh"
+
 for app in ${SINGULARITY_ROOTFS}/scif/apps/*; do
     if [ -d "$app" ]; then
+
         app="${app##*/}"
         app=(`echo $app | sed -e "s/-/_/g"`)
-        echo "APPDATA_$app=/scif/data/$app" >> "$SINGULARITY_ROOTFS/.singularity.d/env/94-appsbase.sh"
-        echo "APPROOT_$app=/scif/apps/$app" >> "$SINGULARITY_ROOTFS/.singularity.d/env/94-appsbase.sh"
-        echo "export APPDATA_$app APPROOT_$app"  >> "$SINGULARITY_ROOTFS/.singularity.d/env/94-appsbase.sh"
+        appbase="${SINGULARITY_ROOTFS}/scif/apps/$app"
+        appmeta="${appbase}/scif"
+
+        # Export data, root, metadata, labels, environment
+        echo "APPDATA_$app=/scif/data/$app" >> "${APPGLOBAL}"
+        echo "APPMETA_$app=/scif/apps/$app/scif" >> "${APPGLOBAL}"
+        echo "APPROOT_$app=/scif/apps/$app" >> "${APPGLOBAL}"
+        echo "APPBIN_$app=/scif/apps/$app/bin" >> "${APPGLOBAL}"
+        echo "APPLIB_$app=/scif/apps/$app/lib" >> "${APPGLOBAL}"
+        echo "export APPDATA_$app APPROOT_$app APPMETA_$app APPBIN_$app APPLIB_$app"  >> "${APPGLOBAL}"
+
+        # Environment
+        if [ -e "${appmeta}/env/90-environment.sh" ]; then
+            echo  "APPENV_${app}=/scif/apps/$app/scif/env/90-environment.sh" >> "${APPGLOBAL}"
+            echo  "export APPENV_${app}" >> "${APPGLOBAL}"
+        fi
+
+        # Labels
+        if [ -e "${appmeta}/labels.json" ]; then
+            echo  "APPLABELS_${app}=/scif/apps/$app/scif/labels.json" >> "${APPGLOBAL}"
+            echo  "export APPLABELS_${app}" >> "${APPGLOBAL}"
+        fi
+
+        # Runscript
+        if [ -e "${appmeta}/runscript" ]; then
+            echo  "APPRUN_${app}=/scif/apps/$app/scif/runscript" >> "${APPGLOBAL}"
+            echo  "export APPRUN_${app}" >> "${APPGLOBAL}"
+        fi
     fi
 done
 

@@ -1,4 +1,4 @@
-singularity-container (2.4.1-1~exp1) UNRELEASED; urgency=medium
+singularity-container (2.4.1-1~exp1) experimental; urgency=medium
 
   * New upstream release
     - Fixed container path and owner limitations
@@ -9,7 +9,7 @@ singularity-container (2.4.1-1~exp1) UNRELEASED; urgency=medium
   * debian/patches/reproducible_build
     - Refreshed patch
 
- -- Mehdi Dogguy <mehdi@debian.org>  Mon, 27 Nov 2017 21:17:31 +0100
+ -- Mehdi Dogguy <mehdi@debian.org>  Mon, 27 Nov 2017 21:22:42 +0100
 
 singularity-container (2.4-1) experimental; urgency=medium
 

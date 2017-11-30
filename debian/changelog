@@ -1,3 +1,11 @@
+singularity-container (2.4.1-1) unstable; urgency=medium
+
+  * Upload to unstable: general functionality is proven to be robust
+    and 2.4.x will be needed for upcoming htcondor 8.6.8 with singularity
+    support
+
+ -- Yaroslav Halchenko <debian@onerussian.com>  Thu, 30 Nov 2017 14:46:30 -0500
+
 singularity-container (2.4.1-1~exp1) experimental; urgency=medium
 
   * New upstream release

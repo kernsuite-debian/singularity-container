@@ -1,7 +1,7 @@
 Source: singularity-container
 Section: admin
 Priority: optional
-Maintainer: NeuroDebian Team <team@neuro.debian.net>
+Maintainer: Debian HPC Team <debian-hpc@lists.debian.org>
 Uploaders:
  Dave Love <fx@gnu.org>,
  Mehdi Dogguy <mehdi@debian.org>,

@@ -6,6 +6,7 @@ singularity-container (2.4.2-2) UNRELEASED; urgency=medium
     James Cowgill for the patch!
   * Set "Debian HPC team" in the maintainer field.
   * Migrate Git repo on Salsa and update Vcs-* fields accordingly
+  * Run wrap-and-sort
 
  -- Mehdi Dogguy <mehdi@debian.org>  Sat, 06 Jan 2018 23:43:05 +0100
 

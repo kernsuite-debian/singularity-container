@@ -4,7 +4,8 @@ Priority: optional
 Maintainer: Debian HPC Team <debian-hpc@lists.debian.org>
 Uploaders: Dave Love <fx@gnu.org>,
            Mehdi Dogguy <mehdi@debian.org>,
-           Yaroslav Halchenko <debian@onerussian.com>
+           Yaroslav Halchenko <debian@onerussian.com>,
+	   Afif Elghraoui <afif@debian.org>,
 Build-Depends: debhelper (>= 9),
                dh-autoreconf,
                help2man,

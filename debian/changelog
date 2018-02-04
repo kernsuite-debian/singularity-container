@@ -1,3 +1,9 @@
+singularity-container (2.4.2-2~bpo9+1) stretch-backports; urgency=medium
+
+  * Rebuild for stretch-backports.
+
+ -- Afif Elghraoui <afif@debian.org>  Sun, 04 Feb 2018 18:37:23 -0500
+
 singularity-container (2.4.2-2) unstable; urgency=medium
 
   * Make package build reproducible again by making sure content of

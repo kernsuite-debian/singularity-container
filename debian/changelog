@@ -1,3 +1,13 @@
+singularity-container (2.4.2-4) unstable; urgency=low
+
+  * Standards-Version 4.1.3
+  * debhelper compat 11
+  * Change squashfs tools to Depends from Recommends
+  * Recommend e2fsprogs (Closes: #887192)
+  * d/rules: add comment explaining why test suite can't be run
+
+ -- Afif Elghraoui <afif@debian.org>  Sat, 17 Feb 2018 17:14:21 -0500
+
 singularity-container (2.4.2-3) unstable; urgency=low
 
   * Add Recommends: squashfs-tools

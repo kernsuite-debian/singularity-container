@@ -17,9 +17,9 @@ Vcs-Browser: https://salsa.debian.org/hpc-team/singularity-container
 Package: singularity-container
 Architecture: any
 Depends: python,
+         squashfs-tools,
          ${misc:Depends},
          ${shlibs:Depends}
-Recommends: squashfs-tools
 Description: container platform focused on supporting "Mobility of Compute"
  Mobility of Compute encapsulates the development to compute model
  where developers can work in an environment of their choosing and

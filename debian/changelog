@@ -1,3 +1,11 @@
+singularity-container (2.4.2-4~bpo8+1) jessie-backports-sloppy; urgency=medium
+
+  * Rebuild for jessie-backports-sloppy.
+  * Switch to debhelper compat 10 (11 not available for jessie)
+  * Drop reproducible_build.patch; incompatible
+
+ -- Afif Elghraoui <afif@debian.org>  Wed, 28 Feb 2018 00:26:18 -0500
+
 singularity-container (2.4.2-4) unstable; urgency=low
 
   * Standards-Version 4.1.3

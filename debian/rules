@@ -9,7 +9,7 @@ PKGDIR=debian/singularity-container
 export SINGULARITY_CACHEDIR=$(PKGDIR)/var/lib/singularity/cache
 
 %:
-	dh $@  --with autoreconf
+	dh $@
 
 override_dh_auto_configure:
 	dh_auto_configure -- --localstatedir=/var/lib
@@ -27,6 +27,8 @@ override_dh_installman:
 override_dh_installdocs:
 	dh_installdocs README.md CONTRIBUTORS.md
 
+# The test suite needs a user with sudo permission (but refuses to run as root)
+# and docker.
 override_dh_auto_test:
 
 override_dh_fixperms:

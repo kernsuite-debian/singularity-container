@@ -1,3 +1,10 @@
+singularity-container (2.4.2-4~bpo9+1) stretch-backports; urgency=medium
+
+  * Rebuild for stretch-backports.
+  * Adjust build-dependency on debhelper for backports
+
+ -- Afif Elghraoui <afif@debian.org>  Wed, 28 Feb 2018 00:06:06 -0500
+
 singularity-container (2.4.2-4) unstable; urgency=low
 
   * Standards-Version 4.1.3

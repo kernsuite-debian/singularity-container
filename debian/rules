@@ -11,10 +11,6 @@ export SINGULARITY_CACHEDIR=$(PKGDIR)/var/lib/singularity/cache
 %:
 	dh $@
 
-override_dh_autoreconf:
-	test -d m4 || mkdir m4
-	dh_autoreconf
-
 override_dh_auto_configure:
 	dh_auto_configure -- --localstatedir=/var/lib
 

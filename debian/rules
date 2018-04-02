@@ -9,7 +9,7 @@ PKGDIR=debian/singularity-container
 export SINGULARITY_CACHEDIR=$(PKGDIR)/var/lib/singularity/cache
 
 %:
-	dh $@
+	dh $@  --with autoreconf
 
 override_dh_auto_configure:
 	dh_auto_configure -- --localstatedir=/var/lib

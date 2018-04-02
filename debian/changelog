@@ -1,3 +1,14 @@
+singularity-container (2.4.5-1) unstable; urgency=medium
+
+  [ Yaroslav Halchenko ]
+  * Revert 01fd7b1b0ab23b03b424e567342dec180b45e2d7 to bring back 
+    compatibility with debhelper 9 to ease backports (Closes: #893133)
+
+  [ Afif Elghraoui ]
+  * New upstream version
+
+ -- Afif Elghraoui <afif@debian.org>  Sat, 24 Mar 2018 16:24:45 -0400
+
 singularity-container (2.4.4-1~bpo9+1) stretch-backports; urgency=medium
 
   * Rebuild for stretch-backports.

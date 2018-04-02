@@ -6,7 +6,7 @@ Uploaders: Dave Love <fx@gnu.org>,
            Mehdi Dogguy <mehdi@debian.org>,
            Yaroslav Halchenko <debian@onerussian.com>,
 	   Afif Elghraoui <afif@debian.org>,
-Build-Depends: debhelper (>= 11~),
+Build-Depends: debhelper (>= 11),
                help2man,
                python
 Standards-Version: 4.1.3

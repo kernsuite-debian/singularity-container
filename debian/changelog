@@ -1,10 +1,11 @@
-singularity-container (2.4.5-1+nd0) UNRELEASED; urgency=medium
+singularity-container (2.4.6-1) unstable; urgency=medium
 
+  * New upstream release
   * debian/patches/reproducible_build
     - do not provide --sort=name if the available version of tar does not
       support it
 
- -- Yaroslav Halchenko <debian@onerussian.com>  Sat, 24 Mar 2018 17:08:49 -0400
+ -- Yaroslav Halchenko <debian@onerussian.com>  Thu, 12 Apr 2018 16:05:31 -0400
 
 singularity-container (2.4.5-1) unstable; urgency=medium
 

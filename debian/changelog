@@ -1,3 +1,20 @@
+singularity-container (2.4.6-2) unstable; urgency=medium
+
+  * debian/patches/1461.patch to resolve inability to use image
+    with a long filename
+    (ref: https://github.com/singularityware/singularity/issues/1185)
+
+ -- Yaroslav Halchenko <debian@onerussian.com>  Sun, 15 Apr 2018 23:43:11 -0400
+
+singularity-container (2.4.6-1) unstable; urgency=medium
+
+  * New upstream release
+  * debian/patches/reproducible_build
+    - do not provide --sort=name if the available version of tar does not
+      support it
+
+ -- Yaroslav Halchenko <debian@onerussian.com>  Thu, 12 Apr 2018 16:05:31 -0400
+
 singularity-container (2.4.5-1~bpo9+1) stretch-backports; urgency=medium
 
   * Rebuild for stretch-backports.

@@ -1,3 +1,10 @@
+singularity-container (2.4.6-2~bpo8+1) jessie-backports-sloppy; urgency=medium
+
+  * Rebuild for jessie-backports-sloppy.
+  * Reintroduce reproducible-builds patch
+
+ -- Afif Elghraoui <afif@debian.org>  Sun, 22 Apr 2018 14:06:56 -0400
+
 singularity-container (2.4.6-2) unstable; urgency=medium
 
   * debian/patches/1461.patch to resolve inability to use image

@@ -1,3 +1,11 @@
+singularity-container (2.5.0-1) unstable; urgency=high
+
+  * New upstream version, including security updates
+  * Add build-dependency on libarchive
+  * Remove patch merged upstream
+
+ -- Afif Elghraoui <afif@debian.org>  Mon, 30 Apr 2018 23:04:24 -0400
+
 singularity-container (2.4.6-2) unstable; urgency=medium
 
   * debian/patches/1461.patch to resolve inability to use image

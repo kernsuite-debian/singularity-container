@@ -1,3 +1,9 @@
+singularity-container (2.5.0-1~bpo8+1) jessie-backports-sloppy; urgency=high
+
+  * Rebuild for jessie-backports-sloppy.
+
+ -- Afif Elghraoui <afif@debian.org>  Thu, 03 May 2018 22:05:36 -0400
+
 singularity-container (2.5.0-1) unstable; urgency=high
 
   * New upstream version, including security updates

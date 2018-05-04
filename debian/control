@@ -9,6 +9,7 @@ Uploaders: Dave Love <fx@gnu.org>,
 Build-Depends: debhelper (>= 9),
                dh-autoreconf,
                help2man,
+               libarchive-dev,
                python
 Standards-Version: 4.1.3
 Homepage: http://singularity.lbl.gov

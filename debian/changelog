@@ -1,3 +1,15 @@
+singularity-container (2.5.1-1) unstable; urgency=high
+
+  [ Yaroslav Halchenko ]
+  * debian/control
+    - Homepage moved to www.sylabs.io
+
+  [ Afif Elghraoui ]
+  * New upstream bug-fix release
+  * Refresh patches
+
+ -- Afif Elghraoui <afif@debian.org>  Thu, 03 May 2018 22:12:31 -0400
+
 singularity-container (2.5.0-1~bpo8+1) jessie-backports-sloppy; urgency=high
 
   * Rebuild for jessie-backports-sloppy.

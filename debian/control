@@ -20,10 +20,10 @@ Package: singularity-container
 Architecture: any
 Depends: python,
          squashfs-tools,
+         ca-certificates,
          ${misc:Depends},
          ${shlibs:Depends}
 Recommends: e2fsprogs,
-            ca-certificates,
 Description: container platform focused on supporting "Mobility of Compute"
  Mobility of Compute encapsulates the development to compute model
  where developers can work in an environment of their choosing and

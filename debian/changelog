@@ -1,7 +1,7 @@
-singularity-container (2.5.2-2) UNRELEASED; urgency=medium
+singularity-container (2.5.2-2) unstable; urgency=medium
 
   * d/control
-    + recommend ca-certificates since required to pull images from shub://
+    + depend on ca-certificates since required to pull images from shub://
 
  -- Yaroslav Halchenko <debian@onerussian.com>  Tue, 10 Jul 2018 14:41:56 -0400
 

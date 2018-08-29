@@ -1,3 +1,10 @@
+singularity-container (2.6.0-1) bionic; urgency=medium
+
+  [ Gijs Molenaar ]
+  * New upstream version 2.6.0
+
+ -- KERN packaging <packaging@kernsuite.info>  Wed, 29 Aug 2018 18:40:43 +0200
+
 singularity-container (2.5.2-1kern1) bionic; urgency=medium
 
   [ Gijs Molenaar ]

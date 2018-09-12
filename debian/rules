@@ -4,6 +4,9 @@ include /usr/share/dpkg/pkg-info.mk
 
 #DH_VERBOSE=1
 export DEB_BUILD_MAINT_OPTIONS = hardening=+all
+# Causes static variable to become having multiple instances, so we need to strip it away
+# See https://github.com/singularityware/singularity/issues/1947
+export DEB_LDFLAGS_MAINT_STRIP=-Wl,-Bsymbolic-functions
 
 PKGDIR=debian/singularity-container
 export SINGULARITY_CACHEDIR=$(PKGDIR)/var/lib/singularity/cache

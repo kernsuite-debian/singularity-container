@@ -1,0 +1,129 @@
+# 
+# Copyright (c) 2017-2018, SyLabs, Inc. All rights reserved.
+# Copyright (c) 2017, SingularityWare, LLC. All rights reserved.
+#
+# Copyright (c) 2015-2017, Gregory M. Kurtzer. All rights reserved.
+# 
+# Copyright (c) 2016, The Regents of the University of California, through
+# Lawrence Berkeley National Laboratory (subject to receipt of any required
+# approvals from the U.S. Dept. of Energy).  All rights reserved.
+# 
+# This software is licensed under a customized 3-clause BSD license.  Please
+# consult LICENSE file distributed with the sources of this project regarding
+# your rights to use or distribute this software.
+# 
+# NOTICE.  This Software was developed under funding from the U.S. Department of
+# Energy and the U.S. Government consequently retains certain rights. As such,
+# the U.S. Government has been granted for itself and others acting on its
+# behalf a paid-up, nonexclusive, irrevocable, worldwide license in the Software
+# to reproduce, distribute copies to the public, prepare derivative works, and
+# perform publicly and display publicly, and to permit other to do so. 
+# 
+# 
+
+%define goversion @GO_VERSION@
+%define singgopath src/github.com/sylabs/singularity
+
+# Disable debugsource packages; otherwise it ends up with an empty %files
+#   file in debugsourcefiles.list on Fedora
+%undefine _debugsource_packages
+
+Summary: Application and environment virtualization
+Name: singularity
+Version: @PACKAGE_VERSION@
+Release: @PACKAGE_RELEASE@%{?dist}
+# https://spdx.org/licenses/BSD-3-Clause-LBNL.html
+License: BSD-3-Clause-LBNL
+Group: System Environment/Base
+URL: https://www.sylabs.io/singularity/
+Source: %{name}-%{version}.tar.gz
+ExclusiveOS: linux
+BuildRoot: %{?_tmppath}%{!?_tmppath:/var/tmp}/%{name}-%{version}-%{release}-root
+BuildRequires: wget
+BuildRequires: git
+BuildRequires: libuuid-devel
+BuildRequires: openssl-devel
+%if ! 0%{?el6}
+BuildRequires: libseccomp-devel
+%endif
+%if "%{_target_vendor}" == "suse"
+Requires: squashfs
+%else
+Requires: squashfs-tools
+%endif
+
+
+Provides: %{name}-runtime
+Obsoletes: %{name}-runtime
+
+%description
+Singularity provides functionality to make portable
+containers that can be used across host environments.
+
+%debug_package
+
+%prep
+# Create our build root
+rm -rf %{name}-%{version}
+mkdir %{name}-%{version}
+
+%build
+cd %{name}-%{version}
+
+#XXX: We would like to remove the download of Go in the future
+GOTAR=go%{goversion}.linux-amd64.tar.gz
+wget https://dl.google.com/go/$GOTAR
+tar -xf $GOTAR
+
+mkdir -p gopath/%{singgopath}
+tar -C "gopath/src/github.com/sylabs/" -xf "%SOURCE0"
+
+export GOROOT=$PWD/go
+export GOPATH=$PWD/gopath
+export PATH=$GOROOT/bin:$GOPATH/bin:$PATH
+cd $GOPATH/%{singgopath}
+
+./mconfig -V %{version}-%{release} --prefix=%{_prefix} --exec-prefix=%{_exec_prefix} \
+	--bindir=%{_bindir} --libexecdir=%{_libexecdir} --sysconfdir=%{_sysconfdir} \
+	--sharedstatedir=%{_sharedstatedir} --localstatedir=%{_localstatedir} \
+	--libdir=%{_libdir}
+
+cd builddir
+make
+
+%install
+cd %{name}-%{version}
+
+export GOROOT=$PWD/go
+export GOPATH=$PWD/gopath
+export PATH=$GOROOT/bin:$GOPATH/bin:$PATH
+cd $GOPATH/%{singgopath}/builddir
+
+# We're making an assumption here, that EXECPREFIX will be /usr,
+# but share/man/man1 is hard coded in Makefile.stubs. We don't have
+# an equivalent to set %{_mandir}, or what it's derived from.
+mkdir -p $RPM_BUILD_ROOT/usr/share/man/man1
+make DESTDIR=$RPM_BUILD_ROOT install man
+
+%clean
+rm -rf $RPM_BUILD_ROOT
+
+%files
+%attr(4755, root, root) %{_libexecdir}/singularity/bin/starter-suid
+%{_bindir}/*
+%dir %{_libexecdir}/singularity
+%{_libexecdir}/singularity/bin/starter
+%{_libexecdir}/singularity/cni/*
+%dir %{_sysconfdir}/singularity
+%config(noreplace) %{_sysconfdir}/singularity/*
+%dir %{_sysconfdir}/bash_completion.d
+%{_sysconfdir}/bash_completion.d/*
+%dir %{_localstatedir}/singularity
+%dir %{_localstatedir}/singularity/mnt
+%dir %{_localstatedir}/singularity/mnt/session
+# XXX: Not great since we can't control this location...
+%{_mandir}/man1/*
+
+
+%changelog
+

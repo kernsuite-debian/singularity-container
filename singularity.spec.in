@@ -31,7 +31,7 @@ Release: %{_rel}%{?dist}
 # https://spdx.org/licenses/BSD-3-Clause-LBNL.html
 License: BSD-3-Clause-LBNL
 Group: System Environment/Base
-URL: http://singularity.lbl.gov/
+URL: https://www.sylabs.io/
 Source: %{name}-%{version}.tar.gz
 ExclusiveOS: linux
 BuildRoot: %{?_tmppath}%{!?_tmppath:/var/tmp}/%{name}-%{version}-%{release}-root
@@ -139,6 +139,7 @@ rm -rf $RPM_BUILD_ROOT
 %{_libexecdir}/singularity/cli/shell.*
 %{_libexecdir}/singularity/cli/test.*
 %{_libexecdir}/singularity/bin/action
+%{_libexecdir}/singularity/bin/get-configvals
 %{_libexecdir}/singularity/bin/start
 %{_libexecdir}/singularity/bin/docker-extract
 %{_libexecdir}/singularity/functions

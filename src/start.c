@@ -81,7 +81,9 @@ int main(int argc, char **argv) {
     singularity_runtime_autofs();
 
     singularity_registry_set("UNSHARE_PID", "1");
+    singularity_registry_set("NOSHIMINIT", "1");
     singularity_registry_set("UNSHARE_IPC", "1");
+    singularity_registry_set("DAEMON_JOIN", NULL);
 
     singularity_cleanupd();
 
@@ -121,12 +123,8 @@ int main(int argc, char **argv) {
     stderr_log = make_logfile("stderr");
 
     singularity_runtime_enter();
+    singularity_runtime_environment();
     singularity_priv_drop_perm();
-
-    if ( envclean() != 0 ) {
-        singularity_message(ERROR, "Failed sanitizing the environment\n");
-        ABORT(255);
-    }
 
     singularity_install_signal_handler();
 

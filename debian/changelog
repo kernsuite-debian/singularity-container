@@ -1,12 +1,16 @@
-singularity-container (2.5.2-3) unstable; urgency=medium
+singularity-container (2.6.1-1) UNRELEASED; urgency=medium
 
+  [ Yaroslav Halchenko ]
   * d/rules
     + DEB_LDFLAGS_MAINT_STRIP=-Wl,-Bsymbolic-functions
       to prevent a weird side-effect on Ubuntu using those LDFLAGS
       and causing static variable to become having multiple "instances".
       Ref: https://github.com/singularityware/singularity/issues/1947
 
- -- Yaroslav Halchenko <debian@onerussian.com>  Tue, 11 Sep 2018 22:05:39 -0400
+  [ Afif Elghraoui ]
+  * New upstream security release fixing CVE-2018-19295
+
+ -- Afif Elghraoui <afif@debian.org>  Thu, 13 Dec 2018 01:41:33 -0500
 
 singularity-container (2.5.2-2) unstable; urgency=medium
 

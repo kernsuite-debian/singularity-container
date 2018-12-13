@@ -1,98 +1,55 @@
-# Installing Singularity development-3.0
+# Installing Singularity
 
-Since you are reading this from the Singualrity source code, it will be assumed
-that you are building/compiling.
-
-## Install system dependencies
-You must first install development and libraries to your host.
-Assuming Ubuntu:
+Since you are reading this from the Singualrity source code, it will be
+assumed that you are building/compiling. You must first
+install the development tools and libraries to your host. Assuming a Red
+Hat compatible system (apply similar to Debian derivitives):
 
 ```
-$ sudo apt-get update && \
-sudo apt-get install -y build-essential \
-libssl-dev uuid-dev libgpgme11-dev squashfs-tools libseccomp-dev pkg-config
+$ sudo yum groupinstall "Development Tools"
 ```
 
-On CentOS/RHEL:
 
-```
-$ sudo yum groupinstall -y 'Development Tools'
-$ sudo yum install -y openssl-devel libuuid-devel libseccomp-devel
-```
-Skip libseccomp-devel on CentOS/RHEL 6.
-
-## Install golang
-
-This is one of several ways to [install and configure golang](https://golang.org/doc/install).
-
-First, visit the [golang download page](https://golang.org/dl/) and pick a
-package archive to download.  Copy the link address and download with `wget`.
-
-```
-$ export VERSION=1.11 OS=linux ARCH=amd64
-$ cd /tmp
-$ wget https://dl.google.com/go/go$VERSION.$OS-$ARCH.tar.gz
-```
-
-Then extract the archive to `/usr/local` (or use other instructions on go
-installation page).
-
-```
-$ sudo tar -C /usr/local -xzf go$VERSION.$OS-$ARCH.tar.gz
-```
-
-Finally, set up your environment for go
-
-```
-$ echo 'export GOPATH=${HOME}/go' >> ~/.bashrc
-$ echo 'export PATH=/usr/local/go/bin:${PATH}:${GOPATH}/bin' >> ~/.bashrc
-$ source ~/.bashrc
-```
-
-## Clone the repo
-golang is a bit finicky about where things are placed. Here is the correct way
-to build Singularity from source.
-
-```
-$ mkdir -p $GOPATH/src/github.com/sylabs
-$ cd $GOPATH/src/github.com/sylabs
-$ git clone https://github.com/sylabs/singularity.git
-$ cd singularity
-```
-
-## Compile the Singularity binary
-Now you are ready to build Singularity. Dependencies will be automatically
-downloaded. You can build Singularity using the following commands:
-
-```
-$ cd $GOPATH/src/github.com/sylabs/singularity
-$ ./mconfig
-$ cd ./builddir
+## To compile and install Singularity from a [released tarball](https://github.com/singularityware/singularity/releases):
+Here, the version of Singularity that you want to install is given in <b>&lt;version&gt;</b>.  Please substitute as necessary.  
+<pre>
+$ version=<b>&lt;version&gt;</b>
+$ wget "https://github.com/singularityware/singularity/releases/download/${version}/singularity-${version}.tar.gz"
+$ tar -xvzf singularity-${version}.tar.gz
+$ cd singularity-${version}
+$ ./configure --prefix=/usr/local
 $ make
 $ sudo make install
-```
+</pre>
 
-Alternatively, to build an rpm on CentOS/RHEL use the following commands: 
+note: The `sudo` is very important for the `make install`. Failure to do this
+will result in a non-functioning or semi-functioning installation.
 
-```
-$ sudo yum install -y rpm-build wget
-$ cd $GOPATH/src/github.com/sylabs/singularity
-$ ./mconfig
-$ make -C builddir rpm
-```
+## To compile and install Singularity from a Git clone:
+Here, the version of Singularity that you want to install is given in <b>&lt;version&gt;</b>.  Please substitute as necessary.  
+<pre>
+$ version=<b>&lt;version&gt;</b>
+$ git clone https://github.com/singularityware/singularity.git
+$ cd singularity
+$ git checkout tags/${version} -b ${version}
+$ ./autogen.sh
+$ ./configure --prefix=/usr/local
+$ make
+$ sudo make install
+</pre>
 
-Golang doesn't have to be installed to build an rpm because the rpm
-build installs golang and all dependencies, but it is still recommended
-for a complete development environment.
+note: The `sudo` is very important for the `make install`. Failure to do this
+will result in a non-functioning or semi-functioning installation.
 
-To build a stable version of Singularity, check out a [release tag](https://github.com/sylabs/singularity/tags) before compiling:
-
-```
-$ git checkout v3.0.0
-```
-
-To build in a different folder and to set the install prefix to a different path:
-
-```
-$ ./mconfig -p /usr/local -b ./buildtree
-```
+## To build an RPM of Singularity from a Git clone:
+Here, the version of Singularity that you want to install is given in <b>&lt;version&gt;</b>.  Please substitute as necessary.  
+<pre>
+$ version=<b>&lt;version&gt;</b>
+$ git clone https://github.com/singularityware/singularity.git
+$ cd singularity
+$ git checkout tags/${version} -b ${version}
+$ ./autogen.sh
+$ ./configure
+$ make dist
+$ rpmbuild -ta singularity-*.tar.gz
+</pre>

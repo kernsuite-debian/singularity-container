@@ -1,3 +1,10 @@
+singularity-container (2.6.1-2) unstable; urgency=medium
+
+  * d/patches/reproducible_build: escape dollar signs in Makefile patch
+    (Closes: #919026)
+
+ -- Afif Elghraoui <afif@debian.org>  Mon, 14 Jan 2019 21:23:04 -0500
+
 singularity-container (2.6.1-1) unstable; urgency=high
 
   [ Yaroslav Halchenko ]

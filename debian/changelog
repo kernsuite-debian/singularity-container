@@ -1,3 +1,9 @@
+singularity-container (2.6.1-2kern1) bionic; urgency=medium
+
+  * backport to ubuntu 18.04
+
+ -- KERN packaging <packaging@kernsuite.info>  Wed, 20 May 2020 13:48:23 +0200
+
 singularity-container (2.6.1-2) unstable; urgency=medium
 
   * d/patches/reproducible_build: escape dollar signs in Makefile patch
